@@ -44,7 +44,7 @@ Module Type MonotoneAlgebraType.
   *)
   Parameter I : interpretation Sig.
   
-  Notation A := (domain I).
+  Abbreviation A := (domain I).
 
   Parameter succ : relation A.
   Parameter succeq : relation A.
@@ -62,10 +62,10 @@ Module Type MonotoneAlgebraType.
   (** For certification of concrete examples we need some subrelations of 
       [succ] and [succeq] that are decidable *)
 
-  Notation IR_succ := (IR I succ).
-  Notation IR_succeq := (IR I succeq).
+  Abbreviation IR_succ := (IR I succ).
+  Abbreviation IR_succeq := (IR I succeq).
 
-  Notation term := (term Sig).
+  Abbreviation term := (term Sig).
 
   Parameters (succ' : relation term) (succeq' : relation term).
   Parameters (succ'_sub : succ' << IR_succ)
@@ -84,9 +84,9 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
 
   Export MA.
 
-  Notation term := (@term Sig).
-  Notation rule := (@rule Sig).
-  Notation rules := (@list rule).
+  Abbreviation term := (@term Sig).
+  Abbreviation rule := (@rule Sig).
+  Abbreviation rules := (@list rule).
 
   Lemma absorb_succ_succeq : absorbs_left IR_succ IR_succeq.
 
@@ -297,7 +297,7 @@ Module MonotoneAlgebraResults (MA : MonotoneAlgebraType).
     Proof.
       intros. unfold hd_red_mod.
       set (Rgt := fst R_gt) in *. set (Rge := snd R_gt) in *.
-      apply WF_incl with (red E # @ (hd_red Rgt U hd_red Rge)).
+      apply WF_incl with ((red E) # @ (hd_red Rgt U hd_red Rge)).
       comp. incl_trans (hd_red Rgt U hd_red Rge).
       apply hd_rule_partition_complete.
       apply wf_rel_mod_simpl. fold (red_mod E Rge). hyp.

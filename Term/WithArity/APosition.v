@@ -17,14 +17,14 @@ From CoLoR Require Import ATrs ListUtil NatUtil VecUtil LogicUtil OptUtil.
 (***********************************************************************)
 (** positions are lists of natural numbers *)
 
-Notation position := (list nat).
+Abbreviation position := (list nat).
 
 Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig). Notation context := (context Sig).
-Notation terms := (vector term).
+Abbreviation term := (term Sig). Abbreviation context := (context Sig).
+Abbreviation terms := (vector term).
 
 (***********************************************************************)
 (** context corresponding to a position *)

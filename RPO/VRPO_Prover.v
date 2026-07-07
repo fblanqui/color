@@ -24,8 +24,8 @@ End TRPO.
 
 Module RPO_Prover (Export R : TRPO).
 
-  Notation term := (@ATerm.term Sig). Notation terms := (list term).
-  Notation rule := (@ATrs.rule Sig). Notation rules := (@list rule).
+  Abbreviation term := (@ATerm.term Sig). Abbreviation terms := (list term).
+  Abbreviation rule := (@ATrs.rule Sig). Abbreviation rules := (@list rule).
 
   Module VPrecedence <: VPrecedenceType.
 

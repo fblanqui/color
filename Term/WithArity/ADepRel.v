@@ -18,8 +18,8 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation terms := (vector term).
-  Notation rule := (rule Sig). Notation rules := (list rule).
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
+  Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
 
 (***********************************************************************)
 (** defined symbols occuring in a term *)
@@ -32,7 +32,7 @@ Section S.
 
   Definition def_symbs R (t : term) := filter (fun f => defined f R) (symbs t).
 
-  Lemma def_symbs_incl : forall R a t, def_symbs R t [= def_symbs (a :: R) t.
+  Lemma def_symbs_incl : forall R a t, def_symbs R t ⊆ def_symbs (a :: R) t.
 
   Proof.
     intros. intro x; unfold def_symbs. rewrite !filter_In; simpl.
@@ -90,7 +90,7 @@ by a function testing whether a symbol occurs in a term
     end.
 
   Lemma symb_ord_img_rec_cons1 : forall Rc a R f,
-    symb_ord_img_rec R Rc f [= symb_ord_img_rec (a :: R) Rc f.
+    symb_ord_img_rec R Rc f ⊆ symb_ord_img_rec (a :: R) Rc f.
 
   Proof.
     intro Rc; elim Rc; simpl; intros. refl.
@@ -106,7 +106,7 @@ by a function testing whether a symbol occurs in a term
   Qed.
 
   Lemma symb_ord_img_rec_cons2 : forall Rc a R f,
-    symb_ord_img_rec R Rc f [= symb_ord_img_rec R (a :: Rc) f.
+    symb_ord_img_rec R Rc f ⊆ symb_ord_img_rec R (a :: Rc) f.
 
   Proof.
     intros; simpl.
@@ -140,7 +140,7 @@ by a function testing whether a symbol occurs in a term
   Qed.
 
   Lemma symb_ord_img_rec_incl : forall Rc1 Rc2 R f,
-    Rc1 [= Rc2 -> symb_ord_img_rec R Rc1 f [= symb_ord_img_rec R Rc2 f.
+    Rc1 ⊆ Rc2 -> symb_ord_img_rec R Rc1 f ⊆ symb_ord_img_rec R Rc2 f.
 
   Proof.
     intros Rc1. induction Rc1.
@@ -155,7 +155,7 @@ by a function testing whether a symbol occurs in a term
   Qed.
 
   Lemma symb_ord_img_incl : forall Rc R f g,
-    R [= Rc -> symb_ord R f g -> In g (symb_ord_img_rec R Rc f).
+    R ⊆ Rc -> symb_ord R f g -> In g (symb_ord_img_rec R Rc f).
 
   Proof.
     intros. apply symb_ord_img_rec_incl with (Rc1 := R); auto.

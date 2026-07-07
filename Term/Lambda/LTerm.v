@@ -111,7 +111,7 @@ Section term.
 (****************************************************************************)
 (** ** Application of a term to a vector of terms. *)
 
-  Notation Tes := (vector Te).
+  Abbreviation Tes := (vector Te).
 
   Fixpoint apps {n} t (us : Tes n) :=
     match us with
@@ -364,11 +364,11 @@ Section term.
 
     Variable ens_X : Ens.
 
-    Notation empty := (Ens_empty ens_X).
-    Notation singleton := (Ens_singleton ens_X).
-    Notation union := (Ens_union ens_X).
-    Notation remove := (Ens_remove ens_X).
-    Notation add := (Ens_add ens_X).
+    Abbreviation empty := (Ens_empty ens_X).
+    Abbreviation singleton := (Ens_singleton ens_X).
+    Abbreviation union := (Ens_union ens_X).
+    Abbreviation remove := (Ens_remove ens_X).
+    Abbreviation add := (Ens_add ens_X).
 
     Fixpoint fv (t : Te) :=
       match t with
@@ -495,7 +495,7 @@ Module Type Var.
 
   #[global] Declare Instance eq_rel : @RelationClasses.RewriteRelation t Equal.
 
-  Notation ens_X :=
+  Abbreviation ens_X :=
     (@mk_Ens X XSet.t empty singleton add union remove diff In mem fold).
 
   (** We assume that [X] is infinite. *)
@@ -524,7 +524,7 @@ Module NatVar <: Var.
 
   #[global] Instance eq_rel : @RelationClasses.RewriteRelation t Equal := {}.
 
-  Notation ens_X :=
+  Abbreviation ens_X :=
     (@mk_Ens X XSet.t empty singleton add union remove diff In mem fold).
 
   Definition var_notin xs :=
@@ -572,28 +572,28 @@ Module Type L_Struct.
 
   (** Notations. *)
 
-  Notation Te := (Te F X).
-  Notation Tes := (vector Te).
+  Abbreviation Te := (Te F X).
+  Abbreviation Tes := (vector Te).
 
-  Notation Var := (@Var F X).
-  Notation Fun := (@Fun F X).
-  Notation App := (@App F X).
-  Notation Lam := (@Lam F X).
+  Abbreviation Var := (@Var F X).
+  Abbreviation Fun := (@Fun F X).
+  Abbreviation App := (@App F X).
+  Abbreviation Lam := (@Lam F X).
 
-  Notation not_lam := (@not_lam F X).
-  Notation size := (@size F X).
-  Notation apps := (@apps F X).
-  Notation head := (@head F X).
-  Notation nb_args := (@nb_args F X).
-  Notation args := (@args F X).
-  Notation fv := (@fv F X ens_X).
-  Notation bv := (@bv F X ens_X).
-  Notation fvs := (@fvs F X ens_X).
-  Notation Monotone := (@Monotone F X).
-  Notation clos_mon := (@clos_mon F X).
-  Notation eq_term_dec := (@eq_term_dec F X FOrd.eq_dec XOrd.eq_dec).
-  Notation beq_term := (bool_of_rel eq_term_dec).
-  Notation supterm := (@supterm F X).
+  Abbreviation not_lam := (@not_lam F X).
+  Abbreviation size := (@size F X).
+  Abbreviation apps := (@apps F X).
+  Abbreviation head := (@head F X).
+  Abbreviation nb_args := (@nb_args F X).
+  Abbreviation args := (@args F X).
+  Abbreviation fv := (@fv F X ens_X).
+  Abbreviation bv := (@bv F X ens_X).
+  Abbreviation fvs := (@fvs F X ens_X).
+  Abbreviation Monotone := (@Monotone F X).
+  Abbreviation clos_mon := (@clos_mon F X).
+  Abbreviation eq_term_dec := (@eq_term_dec F X FOrd.eq_dec XOrd.eq_dec).
+  Abbreviation beq_term := (bool_of_rel eq_term_dec).
+  Abbreviation supterm := (@supterm F X).
 
 End L_Struct.
 

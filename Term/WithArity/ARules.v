@@ -15,8 +15,8 @@ Section defs.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation rule := (rule Sig).
-  Notation rules := (set rule).
+  Abbreviation term := (term Sig). Abbreviation rule := (rule Sig).
+  Abbreviation rules := (set rule).
 
 (***********************************************************************)
 (** rewriting *)
@@ -29,9 +29,9 @@ Section defs.
     fun u v => exists l, exists r, exists s,
       R (mkRule l r) /\ u = sub s l /\ v = sub s r.
 
-  Definition red_mod E R := red E # @ red R.
+  Definition red_mod E R := (red E) # @ red R.
 
-  Definition hd_red_mod E R := red E # @ hd_red R.
+  Definition hd_red_mod E R := (red E) # @ hd_red R.
 
 End defs.
 
@@ -88,7 +88,7 @@ Section props.
 
   Variable Sig : Signature.
 
-  Notation rule := (rule Sig). Notation rules := (set rule).
+  Abbreviation rule := (rule Sig). Abbreviation rules := (set rule).
 
   Lemma red_rule (R : rules) l r c s :
     R (mkRule l r) -> red R (fill c (sub s l)) (fill c (sub s r)).
@@ -121,7 +121,7 @@ Section props.
     ATrs.redtac. subst. apply hd_red_rule. hyp.
   Qed.
 
-  Lemma rt_red_empty : red (@empty rule) # == eq.
+  Lemma rt_red_empty : (red (@empty rule)) # == eq.
 
   Proof.
     split; intros t u h. elim h; intros. redtac. contr. refl.
@@ -138,7 +138,7 @@ Section props.
     apply context_closed_red. apply context_closed_red.
   Qed.
 
-  Lemma red_mod_union (E R : rules) : red_mod E R << red (union E R) #.
+  Lemma red_mod_union (E R : rules) : red_mod E R << (red (union E R)) #.
 
   Proof.
     intros t u [h [h1 h2]]. revert h1 h2. induction 1; intro.
@@ -152,10 +152,10 @@ Section props.
     auto.
   Qed.
 
-  Lemma rt_red_mod_union (E R : rules) : red_mod E R # << red (union E R) #.
+  Lemma rt_red_mod_union (E R : rules) : (red_mod E R) # << (red (union E R)) #.
 
   Proof.
-    intros. incl_trans (red(union E R)##). rewrite red_mod_union. refl.
+    intros. incl_trans ((red(union E R))##). rewrite red_mod_union. refl.
     rewrite rtc_invol. refl.
   Qed.
 

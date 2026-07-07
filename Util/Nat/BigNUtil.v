@@ -60,7 +60,7 @@ Proof. intros x y. rewrite !spec_compare. apply Zcompare_antisym. Qed.
 
 From CoLoR Require Import OrdUtil.
 
-Lemma compare_antisym_eq : forall x y c, (x?=y = CompOpp c) <-> (y?=x = c).
+Lemma compare_antisym_eq : forall x y c, ((x ?= y) = CompOpp c) <-> ((y ?= x) = c).
 
 Proof.
   intros. rewrite <- (compare_antisym y x). split; intro.

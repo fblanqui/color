@@ -28,7 +28,7 @@ Section simple.
 
   Infix "~~>" := Arr (at level 55, right associativity).
 
-  Notation Tys := (vector Ty).
+  Abbreviation Tys := (vector Ty).
 
 (** Basic functions on simple types. *)
 
@@ -313,11 +313,11 @@ Section typing.
 
   Variables F X So : Type.
 
-  Notation Te := (@Te F X).
-  Notation Tes := (vector Te).
-  Notation Var := (@Var F X).
-  Notation Fun := (@Fun F X).
-  Notation Ty := (@Ty So).
+  Abbreviation Te := (@Te F X).
+  Abbreviation Tes := (vector Te).
+  Abbreviation Var := (@Var F X).
+  Abbreviation Fun := (@Fun F X).
+  Abbreviation Ty := (@Ty So).
 
   Variable typ : F -> Ty.
 
@@ -333,9 +333,9 @@ Section typing.
 
   Variable env : Env.
 
-  Notation En := (Env_type env).
-  Notation MapsTo := (Env_MapsTo env).
-  Notation add := (Env_add env).
+  Abbreviation En := (Env_type env).
+  Abbreviation MapsTo := (Env_MapsTo env).
+  Abbreviation add := (Env_add env).
 
   Inductive tr : En -> Te -> Ty -> Prop :=
   | tr_var : forall E x T, MapsTo x T E -> tr E (Var x) T
@@ -400,24 +400,24 @@ Module Type ST_Struct.
 
   Parameter So : Type.
 
-  Notation Ty := (Ty So).
-  Notation Tys := (vector Ty).
+  Abbreviation Ty := (Ty So).
+  Abbreviation Tys := (vector Ty).
  
   Parameter typ : F -> Ty.
 
-  Notation TypArgs := (@TypArgs F X So typ).
+  Abbreviation TypArgs := (@TypArgs F X So typ).
 
   (** Module providing finite maps on variables. *)
 
   Declare Module Export XMap : FMapInterface.S with Module E := XOrd.
 
-  Notation En := (@XMap.t Ty).
-  Notation empty := (@XMap.empty Ty).
-  Notation add := (@XMap.add Ty).
-  Notation In := (@XMap.In Ty).
-  Notation MapsTo := (@XMap.MapsTo Ty).
-  Notation Equal := (@XMap.Equal Ty).
-  Notation env := (mk_Env empty add In MapsTo Equal).
+  Abbreviation En := (@XMap.t Ty).
+  Abbreviation empty := (@XMap.empty Ty).
+  Abbreviation add := (@XMap.add Ty).
+  Abbreviation In := (@XMap.In Ty).
+  Abbreviation MapsTo := (@XMap.MapsTo Ty).
+  Abbreviation Equal := (@XMap.Equal Ty).
+  Abbreviation env := (mk_Env empty add In MapsTo Equal).
 
 End ST_Struct.
 
@@ -440,7 +440,7 @@ are finite maps from variables to types. *)
 (****************************************************************************)
 (** ** Typing. *)
 
-  Notation tr := (@tr F X So typ env).
+  Abbreviation tr := (@tr F X So typ env).
 
   Notation "E '|-' v '~:' V" := (tr E v V) (at level 70).
 

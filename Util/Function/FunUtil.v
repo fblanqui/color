@@ -68,7 +68,7 @@ Section comp.
 
 End comp.
 
-Infix "o" := comp (at level 70).
+Infix "o" := comp (at level 70, right associativity).
 
 (****************************************************************************)
 (** Inverse of a surjective function, using Hilbert's epsilon operator. *)

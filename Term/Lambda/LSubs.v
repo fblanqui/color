@@ -36,24 +36,24 @@ Module Export Def.
       (eq_fun_dec : forall f g : F, {f=g}+{~f=g})
       (eq_var_dec : forall x y : X, {x=y}+{~x=y}).
 
-    Notation Te := (@Te F X).
-    Notation Var := (@Var F X).
-    Notation eq_term_dec := (@eq_term_dec F X eq_fun_dec eq_var_dec).
-    Notation beq_term := (bool_of_rel eq_term_dec).
+    Abbreviation Te := (@Te F X).
+    Abbreviation Var := (@Var F X).
+    Abbreviation eq_term_dec := (@eq_term_dec F X eq_fun_dec eq_var_dec).
+    Abbreviation beq_term := (bool_of_rel eq_term_dec).
 
     (** We assume given a structure for finite sets on [X]. *)
 
     Variable ens_X : Ens X.
 
-    Notation empty := (Ens_empty ens_X).
-    Notation mem := (Ens_mem ens_X).
-    Notation add := (Ens_add ens_X).
-    Notation union := (Ens_union ens_X).
-    Notation remove := (Ens_remove ens_X).
-    Notation fold := (Ens_fold ens_X).
-    Notation In := (Ens_In ens_X).
+    Abbreviation empty := (Ens_empty ens_X).
+    Abbreviation mem := (Ens_mem ens_X).
+    Abbreviation add := (Ens_add ens_X).
+    Abbreviation union := (Ens_union ens_X).
+    Abbreviation remove := (Ens_remove ens_X).
+    Abbreviation fold := (Ens_fold ens_X).
+    Abbreviation In := (Ens_In ens_X).
 
-    Notation fv := (@fv F X ens_X).
+    Abbreviation fv := (@fv F X ens_X).
 
     (** We assume that [X] is infinite. *)
 
@@ -218,27 +218,27 @@ Module Make (Export L : L_Struct).
 
   (** Notations for substitutions and related definitions. *)
 
-  Notation id := (@id F X).
-  Notation update := (@update F X XOrd.eq_dec).
-  Notation single := (@single F X XOrd.eq_dec).
-  Notation restrict := (@restrict F X ens_X).
-  Notation domain_fun := (@domain_fun F X FOrd.eq_dec XOrd.eq_dec ens_X).
-  Notation domain := (@domain F X FOrd.eq_dec XOrd.eq_dec ens_X).
-  Notation fvcod_fun := (@fvcod_fun F X ens_X).
-  Notation fvcod := (@fvcod F X ens_X).
-  Notation fvcodom := (@fvcodom F X FOrd.eq_dec XOrd.eq_dec ens_X).
-  Notation var := (@var F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation subs1 := (@subs1 F X XOrd.eq_dec).
-  Notation rename1 := (@rename1 F X XOrd.eq_dec).
-  Notation comp1 := (@comp1 F X XOrd.eq_dec).
-  Notation subs := (@subs F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation subs_single :=
+  Abbreviation id := (@id F X).
+  Abbreviation update := (@update F X XOrd.eq_dec).
+  Abbreviation single := (@single F X XOrd.eq_dec).
+  Abbreviation restrict := (@restrict F X ens_X).
+  Abbreviation domain_fun := (@domain_fun F X FOrd.eq_dec XOrd.eq_dec ens_X).
+  Abbreviation domain := (@domain F X FOrd.eq_dec XOrd.eq_dec ens_X).
+  Abbreviation fvcod_fun := (@fvcod_fun F X ens_X).
+  Abbreviation fvcod := (@fvcod F X ens_X).
+  Abbreviation fvcodom := (@fvcodom F X FOrd.eq_dec XOrd.eq_dec ens_X).
+  Abbreviation var := (@var F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation subs1 := (@subs1 F X XOrd.eq_dec).
+  Abbreviation rename1 := (@rename1 F X XOrd.eq_dec).
+  Abbreviation comp1 := (@comp1 F X XOrd.eq_dec).
+  Abbreviation subs := (@subs F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation subs_single :=
     (@subs_single F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation comp := (@comp F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation rename := (@rename F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation clos_subs :=
+  Abbreviation comp := (@comp F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation rename := (@rename F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation clos_subs :=
     (@clos_subs F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation subs_rel := (@subs_rel F X ens_X).
+  Abbreviation subs_rel := (@subs_rel F X ens_X).
 
   Module Export T := LTerm.Make L.
 
@@ -337,7 +337,7 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** ** Syntactic equality of two substitutions on some finite set of variables *)
 
-  Notation seq := (subs_rel Logic.eq).
+  Abbreviation seq := (subs_rel Logic.eq).
 
   Lemma seq_restrict xs ys s : xs [<=] ys -> seq xs s (restrict ys s).
 

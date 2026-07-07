@@ -165,16 +165,16 @@ Lemma is_not_neg_ok : forall z, is_not_neg z = true <-> 0 <= z.
 
 Proof. destruct z; simpl; intuition auto with *; discr. Qed.
 
-Notation pos := (fun z => 0 <= z).
-Notation D := (sig pos).
-Notation val := (@proj1_sig Z pos).
-Notation inj := (@exist Z pos _).
+Abbreviation pos := (fun z => 0 <= z).
+Abbreviation D := (sig pos).
+Abbreviation val := (@proj1_sig Z pos).
+Abbreviation inj := (@exist Z pos _).
 
 Lemma Zero_in_D : pos 0.
 
 Proof. simpl. lia. Qed.
 
-Notation D0 := (inj Zero_in_D).
+Abbreviation D0 := (inj Zero_in_D).
 
 Lemma pos_power_val : forall x n, pos (power (val x) n).
 

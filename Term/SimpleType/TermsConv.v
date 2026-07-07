@@ -18,6 +18,8 @@ From CoLoR Require Import RelExtras ListPermutation TermsPos ListUtil
 From Stdlib Require Import Compare_dec Setoid Morphisms Lia PeanoNat.
 From Stdlib Require Psatz.
 
+Create HintDb terms_eq.
+
 Module TermsConv (Sig : TermsSig.Signature).
 
   Module Export TP := TermsPos.TermsPos Sig.
@@ -2354,7 +2356,7 @@ Module TermsConv (Sig : TermsSig.Signature).
     destruct Ns'; try solve [inversion Ns'Nl].
     destruct Ns'; try solve [inversion Ns'Nl].
     simpl in * ; rewrite app_comm_cons.
-    rewrite <- app_ass; rewrite Ns'Nl.
+    rewrite app_assoc; rewrite Ns'Nl.
     sym; apply appUnits_app.
     rewrite MsMs'.
     unfold conv_list; apply list_sim_app; trivial.
@@ -2365,7 +2367,7 @@ Module TermsConv (Sig : TermsSig.Signature).
 
   Lemma apply_variable : forall M, isArrowType M.(type) ->
     exists MA: Term, exists Mapp: isApp MA, 
-      (appBodyL Mapp) ~ M /\ term (appBodyR Mapp) = %length (env M) /\ 
+      (appBodyL Mapp) ~ M /\ term (appBodyR Mapp) = %(length (env M)) /\ 
       env MA = env M ++ Some (type_left (type M))::EmptyEnv.
 
   Proof.

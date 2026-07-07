@@ -86,7 +86,7 @@ Section symprod.
 
   Variables (A B : Type) (leA : relation A) (leB : relation B).
 
-  Notation Symprod := (symprod leA leB).
+  Abbreviation Symprod := (symprod leA leB).
 
   Lemma Acc_symprod_fst x : Acc Symprod x -> Acc leA (fst x).
 
@@ -246,9 +246,11 @@ Section Fix.
     (F_ext : forall x (f g : forall y, R y x -> P y),
       (forall y (p : R y x), eq (f y p) (g y p)) -> eq (F f) (F g)).
 
-  Notation Fix_F := (Fix_F F).
-  Notation Fix_F_eq := (Fix_F_eq F).
-  Notation Fix := (Fix Rwf F).
+  Abbreviation Fix_F := (Fix_F F).
+  Abbreviation Fix_F_eq := (Fix_F_eq F).
+  Abbreviation Fix := (Fix Rwf F).
+
+  #[warnings="-notation-overridden"]
   Infix "==" := eq (at level 70).
 
   Lemma Fix_F_inv : forall x (r s : Acc R x), Fix_F r == Fix_F s.

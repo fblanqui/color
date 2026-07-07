@@ -33,7 +33,7 @@ Inductive term : Type :=
 
 Set Elimination Schemes.
 
-Notation terms := (list term).
+Abbreviation terms := (list term).
 
 (***********************************************************************)
 (** induction principle *)

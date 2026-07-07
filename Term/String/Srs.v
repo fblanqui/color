@@ -50,7 +50,7 @@ Definition red R : relation string := fun s1 s2 =>
   exists l, exists r, exists c,
     In (mkRule l r) R /\ s1 = fill c l /\ s2 = fill c r.
 
-Definition red_mod E R := red E # @ red R.
+Definition red_mod E R := (red E) # @ red R.
 
 End definition.
 
@@ -79,7 +79,7 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation string := (string Sig). Notation rules := (rules Sig).
+Abbreviation string := (string Sig). Abbreviation rules := (rules Sig).
 
 Section red.
 
@@ -109,7 +109,7 @@ rewrite !fill_fill. auto.
 Qed.
 
 Lemma rtc_red_fill : forall c t u,
-  red R # t u -> red R # (fill c t) (fill c u).
+  (red R) # t u -> (red R) # (fill c t) (fill c u).
 
 Proof.
 induction 1. apply rt_step. apply red_fill. hyp. apply rt_refl.
@@ -122,7 +122,7 @@ Proof.
 unfold red. intros. decomp H. destruct H1.
 Qed.
 
-Lemma red_nil_rtc : forall x y : string, red nil # x y -> x = y.
+Lemma red_nil_rtc : forall x y : string, (red nil) # x y -> x = y.
 
 Proof.
 induction 1. apply red_nil. exact H. refl. trans y; hyp.

@@ -19,22 +19,22 @@ Section S.
 
   Variable ASig : Signature.
 
-  Notation term := (term ASig). Notation context := (context ASig).
-  Notation rule := (rule ASig). Notation rules := (list rule).
+  Abbreviation term := (term ASig). Abbreviation context := (context ASig).
+  Abbreviation rule := (rule ASig). Abbreviation rules := (list rule).
 
   Variable is_unary_sig : is_unary ASig.
 
-  Notation Fun1 := (Fun1 is_unary_sig). Notation Cont1 := (Cont1 is_unary_sig).
-  Notation cont := (cont is_unary_sig). Notation red1 := (red1 is_unary_sig).
-  Notation term_ind_forall := (term_ind_forall is_unary_sig).
+  Abbreviation Fun1 := (Fun1 is_unary_sig). Abbreviation Cont1 := (Cont1 is_unary_sig).
+  Abbreviation cont := (cont is_unary_sig). Abbreviation red1 := (red1 is_unary_sig).
+  Abbreviation term_ind_forall := (term_ind_forall is_unary_sig).
 
 (***********************************************************************)
 (** corresponding string signature *)
 
   Definition SSig_of_ASig := VSignature.mkSignature (@beq_symb_ok ASig).
 
-  Notation SSig := SSig_of_ASig. Notation string := (string SSig).
-  Notation srule := (Srs.rule SSig).
+  Abbreviation SSig := SSig_of_ASig. Abbreviation string := (string SSig).
+  Abbreviation srule := (Srs.rule SSig).
 
 (***********************************************************************)
 (** conversion term <-> string *)
@@ -223,8 +223,8 @@ Section S.
       apply in_map. hyp.
     Qed.
 
-    Lemma rtc_sred_of_red : forall t u, red R # t u ->
-      Srs.red (srs_of_trs R) # (string_of_term t) (string_of_term u).
+    Lemma rtc_sred_of_red : forall t u, (red R) # t u ->
+      (Srs.red (srs_of_trs R)) # (string_of_term t) (string_of_term u).
 
     Proof.
       induction 1. apply rt_step. apply sred_of_red. hyp.
@@ -242,8 +242,8 @@ Section S.
       hyp.
     Qed.
 
-    Lemma rtc_red_of_sred : forall t u, Srs.red (srs_of_trs R) # t u ->
-      red R # (term_of_string t) (term_of_string u).
+    Lemma rtc_red_of_sred : forall t u, (Srs.red (srs_of_trs R)) # t u ->
+      (red R) # (term_of_string t) (term_of_string u).
 
     Proof.
       induction 1. apply rt_step. apply red_of_sred. hyp.

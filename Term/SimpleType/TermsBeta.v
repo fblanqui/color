@@ -723,8 +723,8 @@ Module TermsBeta (Sig : TermsSig.Signature).
     set (MNS_app := app_subst_app Mapp0 MS).
     assert (MNS_Labs: isAbs (appBodyL MNS_app)).
     eapply abs_isAbs.
-    assert (MS_term : term (subst MS) = presubst_aux (term (appBodyL Mapp0)) 
-      0 G [presubst_aux (term (appBodyR Mapp0)) 0 G]).
+    assert (MS_term : term (subst MS) = (presubst_aux (term (appBodyL Mapp0)) 
+      0 G) [presubst_aux (term (appBodyR Mapp0)) 0 G]).
     rewrite subst_term; term_inv M.
     rewrite (appBodyL_term (subst MS) MS_term).
     rewrite (abs_term (appBodyL Mapp0) MLabs).

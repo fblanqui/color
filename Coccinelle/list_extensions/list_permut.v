@@ -22,6 +22,7 @@ Inductive permut0 (A B : Type) (R : A -> B -> Prop) : (list A -> list B -> Prop)
   | Pnil : permut0 R nil nil
   | Pcons : forall a b l l1 l2, R a b -> permut0 R l (l1 ++ l2) ->
                    permut0 R (a :: l) (l1 ++ b :: l2).
+Scheme All for permut0.
 
 Lemma permut_nil : 
   forall (A B : Type) (R : A -> B -> Prop) l, permut0 R l nil -> l = nil.
@@ -794,7 +795,7 @@ End SRel2.
 Module Type S.
 
   Declare Module Import EDS : decidable_set.ES.
-  Notation permut := (permut0 eq_A).
+  Abbreviation permut := (permut0 eq_A).
 
 (* Theorem list_permut_refl *)
  Parameter permut_refl :
@@ -916,7 +917,7 @@ End S.
 Module Make (EDS1 : decidable_set.ES) : S with Module EDS:= EDS1. 
 
   Module Import EDS <: decidable_set.ES := EDS1.
-  Notation permut := (permut0 eq_A).
+  Abbreviation permut := (permut0 eq_A).
 
 (** ** Permutation is a equivalence relation. 
       Reflexivity. *)

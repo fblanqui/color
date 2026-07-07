@@ -19,8 +19,8 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation terms := (vector term).
-  Notation rule := (rule Sig). Notation rules := (rules Sig).
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
+  Abbreviation rule := (rule Sig). Abbreviation rules := (rules Sig).
 
 (***********************************************************************)
 (** labels *)
@@ -34,13 +34,13 @@ Section S.
 
   Variable I : interpretation Sig.
 
-  Notation int := (@term_int _ I).
+  Abbreviation int := (@term_int _ I).
 
   Record lab_symb : Type := mk {
     l_symb : Sig;
     l_lab : L l_symb }.
 
-  Notation eq_symb_dec := (@eq_symb_dec Sig).
+  Abbreviation eq_symb_dec := (@eq_symb_dec Sig).
 
   Ltac Leqtac := repeat
     match goal with
@@ -71,9 +71,9 @@ Section S.
 
   Definition lab_sig := mkSignature lab_arity beq_lab_symb_ok.
 
-  Notation Sig' := lab_sig. Notation Fun' := (@Fun Sig').
-  Notation term' := (ATerm.term Sig'). Notation terms' := (vector term').
-  Notation rule' := (ATrs.rule Sig'). Notation rules' := (rules Sig').
+  Abbreviation Sig' := lab_sig. Abbreviation Fun' := (@Fun Sig').
+  Abbreviation term' := (ATerm.term Sig'). Abbreviation terms' := (vector term').
+  Abbreviation rule' := (ATrs.rule Sig'). Abbreviation rules' := (rules Sig').
 
 (***********************************************************************)
 (** labelling *)
@@ -139,7 +139,7 @@ Section S.
     rewrite lab_fval. 2: hyp. rewrite lab_fval. 2: hyp. refl.
   Qed.
 
-  Notation fold_max := (@fold_max Sig).
+  Abbreviation fold_max := (@fold_max Sig).
 
   Lemma map_lab_rule_fval : forall v R n, n > maxvar_rules R ->
     map (lab_rule (fval v n)) R = map (lab_rule v) R.
@@ -158,7 +158,7 @@ Section S.
 
   Variable Lgt : forall f, relation (L f). Infix ">L" := Lgt (at level 50).
 
-  Let Lge f := @Lgt f %. Infix ">=L" := Lge (at level 50).
+  Let Lge f := (@Lgt f)%. Infix ">=L" := Lge (at level 50).
 
   Definition Fun'_vars f (a : L f) := Fun' (mk a) (fresh_vars (arity f)).
 
@@ -168,7 +168,7 @@ Section S.
     exists f, exists a : L f, exists b, a >L b /\ rho = decr a b.
 
   Lemma Lge_Decr : forall f (ts : terms' (arity f)) (a b : L f),
-    a >=L b -> red Decr # (Fun' (mk a) ts) (Fun' (mk b) ts).
+    a >=L b -> (red Decr) # (Fun' (mk a) ts) (Fun' (mk b) ts).
 
   Proof.
     intros. destruct H. subst. apply rt_refl. apply rt_step.
@@ -207,10 +207,10 @@ Section S.
 
   Proof.
     intros R [l r]. split.
-    (* [= *)
+    (* ⊆ *)
     intros [[l' r'] [h1 h2]]. destruct h1 as [[x y] [v [h h']]]. inversion h'.
     inversion h2. subst. rewrite !Ft_epi. hyp.
-    (* =] *)
+    (* ⊇ *)
     unfold Frs. intro. set (v := fun x : variable => some_elt I).
     exists (mkRule (lab v l) (lab v r)). split.
     unfold lab_rules. exists (mkRule l r). exists v. intuition.
@@ -226,14 +226,14 @@ Section S.
     refl.
   Qed.
 
-  Lemma rt_red_Frs_Decr : red (unlab_rules Decr) # << @eq term.
+  Lemma rt_red_Frs_Decr : (red (unlab_rules Decr)) # << @eq term.
 
   Proof.
     intros t u. induction 1. apply red_Frs_Decr. hyp. refl. trans y; hyp.
   Qed.
 
   Lemma red_mod_Frs_Decr : forall E,
-    red (unlab_rules (union Decr (lab_rules E))) << red E %.
+    red (unlab_rules (union Decr (lab_rules E))) << (red E) %.
 
   Proof.
     intros E t u h. redtac. subst. apply Frs_app in lr. destruct lr.
@@ -244,10 +244,10 @@ Section S.
   Qed.
 
   Lemma rt_red_mod_Frs_Decr : forall E,
-    red (unlab_rules (union Decr (lab_rules E))) # << red E #.
+    (red (unlab_rules (union Decr (lab_rules E)))) # << (red E) #.
 
   Proof.
-    intro E. trans (red E % #). rewrite red_mod_Frs_Decr. refl.
+    intro E. trans ((red E) % #). rewrite red_mod_Frs_Decr. refl.
     rewrite rc_incl_rtc, rtc_invol. refl.
   Qed.
 
@@ -263,7 +263,7 @@ Section S.
 
   Section red.
 
-    Variable R : set rule. Notation R' := (lab_rules R).
+    Variable R : set rule. Abbreviation R' := (lab_rules R).
 
     Variable ge_compat : forall l r, R (mkRule l r) -> l >=I r.
 
@@ -303,14 +303,14 @@ Section S.
       set (us := Vcast (Vapp w0 (Vcons (lab v r1) w1)) e).
       do 2 destruct H. set (vs := Vcast (Vapp w0 (Vcons x w1)) e).
       exists (Fun' (mk b) vs). split. apply rt_trans with (Fun' (mk b) ts). hyp.
-      apply context_closed_fun with (R := red Decr #).
+      apply context_closed_fun with (R := (red Decr) #).
       apply context_closed_rtc. apply context_closed_red. hyp.
       apply context_closed_fun with (R := red R'). apply context_closed_red.
       hyp.
     Qed.
 
     Lemma rt_red_lab : forall v t u,
-      red R # t u -> red_mod Decr R' # (lab v t) (lab v u).
+      (red R) # t u -> (red_mod Decr R') # (lab v t) (lab v u).
 
     Proof.
       induction 1. apply rt_step. apply red_lab. hyp. apply rt_refl.
@@ -345,7 +345,7 @@ Section S.
     Variable ge_compatE : forall l r, E (mkRule l r) -> l >=I r.
     Variable ge_compatR : forall l r, R (mkRule l r) -> l >=I r.
 
-    Notation E' := (lab_rules E). Notation R' := (lab_rules R).
+    Abbreviation E' := (lab_rules E). Abbreviation R' := (lab_rules R).
 
     Lemma red_mod_lab : forall v t u,
       red_mod E R t u -> red_mod (union Decr E') R' (lab v t) (lab v u).
@@ -510,7 +510,7 @@ Definition enum2 R :=
     Definition enum_Decr := flat_map (fun f =>
       map (fun x : L f * L f => let (a,b) := x in decr a b) (L2s f)) Fs.
 
-    Notation D' := enum_Decr.
+    Abbreviation D' := enum_Decr.
 
     Lemma enum_Decr_correct : forall x, In x D' -> Decr x.
 
@@ -540,7 +540,7 @@ Definition enum2 R :=
 (***********************************************************************)
 (** main theorems (finite versions) *)
 
-    Import ATrs List. Notation rules := (rules Sig). Notation term := S.term.
+    Import ATrs List. Abbreviation rules := (rules Sig). Abbreviation term := S.term.
 
     Variable bge : term -> term -> bool.
     Variable bge_ok : rel_of_bool bge << Ige.
@@ -566,13 +566,13 @@ Definition enum2 R :=
 
       Variables E R : rules.
 
-      Notation E' := (enum E). Notation R' := (enum R).
+      Abbreviation E' := (enum E). Abbreviation R' := (enum R).
 
       Variable bge_compatE : forallb (brule bge) E = true.
       Variable bge_compatR : forallb (brule bge) R = true.
 
-      Notation ge_compatE := (ge_compat bge_compatE).
-      Notation ge_compatR := (ge_compat bge_compatR).
+      Abbreviation ge_compatE := (ge_compat bge_compatE).
+      Abbreviation ge_compatR := (ge_compat bge_compatR).
 
       Lemma WF_red_lab_fin : WF (red R) <-> WF (red_mod D' R').
 
@@ -688,7 +688,7 @@ Module Type OrdSemLab.
 
   Infix ">L" := Lgt (at level 50).
 
-  Parameter pi_mon : forall f, Vmonotone (pi f) Dge (@Lgt f%).
+  Parameter pi_mon : forall f, Vmonotone (pi f) Dge ((@Lgt f)%).
 
 End OrdSemLab.
 
@@ -712,11 +712,11 @@ Module Ord (SL : SemLab) <: OrdSemLab.
 
   Definition Lgt (f : Sig) (_ _ : L f) := False.
 
-  Lemma Lge_is_eq : forall f a b, (@Lgt f%) a b <-> a = b.
+  Lemma Lge_is_eq : forall f a b, ((@Lgt f)%) a b <-> a = b.
 
   Proof. fo. Qed.
 
-  Lemma pi_mon : forall f, Vmonotone (pi f) Dge (@Lgt f%).
+  Lemma pi_mon : forall f, Vmonotone (pi f) Dge ((@Lgt f)%).
 
   Proof.
     unfold Vmonotone, Vmonotone_i, RelUtil.monotone. intros.
@@ -725,7 +725,7 @@ Module Ord (SL : SemLab) <: OrdSemLab.
 
   Notation "t '>=I' u" := (IR I Dge t u) (at level 70).
 
-  Notation Sig' := (lab_sig Sig beq_ok).
+  Abbreviation Sig' := (lab_sig Sig beq_ok).
 
   Lemma Decr_empty : Decr beq_ok Lgt [=] empty.
 
@@ -810,8 +810,8 @@ Import ARules.
 
 Module OrdSemLabProps (Import OSL : OrdSemLab).
 
-  Notation Decr := (Decr beq_ok Lgt).
-  Notation lab_rules := (lab_rules beq_ok pi).
+  Abbreviation Decr := (Decr beq_ok Lgt).
+  Abbreviation lab_rules := (lab_rules beq_ok pi).
  
   Section props.
 
@@ -904,7 +904,7 @@ Module FinOrdSemLabProps (Import FOSL : FinOrdSemLab).
     Definition Fs := Fs_lab Fs Ls.
     Definition Fs_ok := Fs_lab_ok beq_ok Fs_ok Ls_ok.
 
-    Notation unlab_rules := (unlab_rules_fin Sig beq_ok).
+    Abbreviation unlab_rules := (unlab_rules_fin Sig beq_ok).
 
     Ltac unlab :=
       match goal with
@@ -915,8 +915,8 @@ Module FinOrdSemLabProps (Import FOSL : FinOrdSemLab).
 
   End LabSig.
 
-  Notation Decr := (enum_Decr beq_ok Fs L2s).
-  Notation lab_rules := (enum beq_ok pi Is).
+  Abbreviation Decr := (enum_Decr beq_ok Fs L2s).
+  Abbreviation lab_rules := (enum beq_ok pi Is).
 
   Section props.
 

@@ -91,7 +91,7 @@ Section S.
     | y :: m => mem y l' && incl m l'
     end.
 
-  Lemma incl_ok : forall l l', incl l l' = true <-> l [= l'.
+  Lemma incl_ok : forall l l', incl l l' = true <-> l ⊆ l'.
 
   Proof.
     induction l; simpl; intros; auto. intuition. apply incl_nil. split; intro.

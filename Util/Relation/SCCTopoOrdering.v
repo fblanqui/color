@@ -18,19 +18,19 @@ Section SCC_quotient.
 
   Variable hyps : SCC_dec_hyps.
 
-  Notation A := (hyp_A hyps).
-  Notation eq_dec := (hyp_eq_dec hyps).
-  Notation Dom := (hyp_Dom hyps).
-  Notation R := (hyp_R hyps).
-  Notation restriction := (hyp_restriction hyps).
-  Notation Dom_nodup := (hyp_nodup hyps).
-  Notation R_dec := (hyp_R_dec hyps).
-  Notation dim := (length Dom).
+  Abbreviation A := (hyp_A hyps).
+  Abbreviation eq_dec := (hyp_eq_dec hyps).
+  Abbreviation Dom := (hyp_Dom hyps).
+  Abbreviation R := (hyp_R hyps).
+  Abbreviation restriction := (hyp_restriction hyps).
+  Abbreviation Dom_nodup := (hyp_nodup hyps).
+  Abbreviation R_dec := (hyp_R_dec hyps).
+  Abbreviation dim := (length Dom).
 
   Variables (M : matrix dim dim) (HM : M = SCC_mat_effective hyps).
 
-  Notation SCC := (SCC R).
-  Notation SCC_dec := (SCC_effective_dec hyps HM).
+  Abbreviation SCC := (SCC R).
+  Abbreviation SCC_dec := (SCC_effective_dec hyps HM).
 
 (***********************************************************************)
 (** Reflexive closure of SCC:

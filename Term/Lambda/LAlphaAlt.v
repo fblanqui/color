@@ -26,26 +26,26 @@ Module Export Def.
       (eq_fun_dec : forall f g : F, {f=g}+{~f=g})
       (eq_var_dec : forall x y : X, {x=y}+{~x=y}).
 
-    Notation Te := (@Te F X).
-    Notation Var := (@Var F X).
-    Notation Fun := (@Fun F X).
-    Notation rename1 := (@rename1 F X eq_var_dec).
+    Abbreviation Te := (@Te F X).
+    Abbreviation Var := (@Var F X).
+    Abbreviation Fun := (@Fun F X).
+    Abbreviation rename1 := (@rename1 F X eq_var_dec).
 
     (** We assume given a structure for finite sets on [X]. *)
 
     Variable ens_X : Ens X.
 
-    Notation In := (@Ens_In X ens_X).
-    Notation add := (@Ens_add X ens_X).
-    Notation union := (@Ens_union X ens_X).
-    Notation fv := (@fv F X ens_X).
-    Notation bv := (@bv F X ens_X).
+    Abbreviation In := (@Ens_In X ens_X).
+    Abbreviation add := (@Ens_add X ens_X).
+    Abbreviation union := (@Ens_union X ens_X).
+    Abbreviation fv := (@fv F X ens_X).
+    Abbreviation bv := (@bv F X ens_X).
 
     (** We assume that [X] is infinite. *)
 
     Variable var_notin : Ens_type ens_X -> X.
 
-    Notation rename := (@rename F X eq_fun_dec eq_var_dec ens_X var_notin).
+    Abbreviation rename := (@rename F X eq_fun_dec eq_var_dec ens_X var_notin).
 
 (***********************************************************************)
 (** Replace every occurrence of a variable [x] by [y], including
@@ -148,15 +148,15 @@ Module Make (Export L : L_Struct).
 
   Module Export A := LAlpha.Make L.
 
-  Notation replace_var := (@replace_var X XOrd.eq_dec).
-  Notation replace_all := (@replace_all F X XOrd.eq_dec).
-  Notation transpose_var := (@transpose_var X XOrd.eq_dec).
-  Notation transpose := (@transpose F X XOrd.eq_dec).
-  Notation aeq_ch_top := (@aeq_ch_top F X XOrd.eq_dec ens_X).
-  Notation aeq_ch := (@aeq_ch F X XOrd.eq_dec ens_X).
-  Notation aeq_kr := (@aeq_kr F X XOrd.eq_dec ens_X).
-  Notation aeq_gp := (@aeq_gp F X XOrd.eq_dec ens_X).
-  Notation action := (@action F X).
+  Abbreviation replace_var := (@replace_var X XOrd.eq_dec).
+  Abbreviation replace_all := (@replace_all F X XOrd.eq_dec).
+  Abbreviation transpose_var := (@transpose_var X XOrd.eq_dec).
+  Abbreviation transpose := (@transpose F X XOrd.eq_dec).
+  Abbreviation aeq_ch_top := (@aeq_ch_top F X XOrd.eq_dec ens_X).
+  Abbreviation aeq_ch := (@aeq_ch F X XOrd.eq_dec ens_X).
+  Abbreviation aeq_kr := (@aeq_kr F X XOrd.eq_dec ens_X).
+  Abbreviation aeq_gp := (@aeq_gp F X XOrd.eq_dec ens_X).
+  Abbreviation action := (@action F X).
 
 (***********************************************************************)
 (** ** Properties of [replace_var]. *)

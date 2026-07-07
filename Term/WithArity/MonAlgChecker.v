@@ -19,10 +19,10 @@ Section MonAlgChecker.
 
 Variable Sig : Signature.
 
-Notation Problem := (Problem Sig).
-Notation term := (term Sig).
-Notation rule := (@rule Sig).
-Notation rules := (@list rule).
+Abbreviation Problem := (Problem Sig).
+Abbreviation term := (term Sig).
+Abbreviation rule := (@rule Sig).
+Abbreviation rules := (@list rule).
 
 Variable domain : Type.
 Let D := domain.
@@ -34,8 +34,8 @@ Variable succ_wf : WF succ.
 Variable succ_succeq_compat : absorbs_left succ succeq.
 
 Variable arSymInt : nat -> Set.
-Notation symInt := (symInt Sig arSymInt).
-Notation funInt := (funInt Sig arSymInt).
+Abbreviation symInt := (symInt Sig arSymInt).
+Abbreviation funInt := (funInt Sig arSymInt).
 
 Variable defaultInt : forall n, arSymInt n.
 
@@ -50,10 +50,10 @@ Variable check_succeq : forall i r, option (IR (makeI i) succeq (lhs r) (rhs r))
 Section given_int.
 
 Variable i : forall f, funInt f.
-Notation I := (makeI i).
+Abbreviation I := (makeI i).
 
-Notation IR_succ := (IR I succ).
-Notation IR_succeq := (IR I succeq).
+Abbreviation IR_succ := (IR I succ).
+Abbreviation IR_succeq := (IR I succeq).
 
 Section reduction_pairs.
 
@@ -107,8 +107,8 @@ Program Definition check_compat (R : rules) (F : relation D)
   end. 
 
 Next Obligation.
-Proof with try discr; auto.
-  destruct_call lforall_opt...
+Proof.
+  destruct_call lforall_opt; try discr; auto.
   intros t u Rtu. destruct (lforall_in wildcard' Rtu). hyp.
 Qed.
 
@@ -126,11 +126,11 @@ Program Definition simplify (R : rules) :
     end.
 
 Next Obligation.
-Proof with try discr; auto.
-  exists l. destruct_call check_compat...
-  repeat split...
+Proof.
+  exists l. destruct_call check_compat; try discr; auto.
+  repeat split; try discr; auto.
   intros t u Rtu. exact (lforall_in H Rtu).
-  intros p pR. apply in_or_app. apply H1...
+  intros p pR. apply in_or_app. apply H1; try discr; auto.
 Qed.
 
 Program Definition applyMonotoneAlgebra (P : Problem) : 
@@ -175,26 +175,26 @@ Program Definition applyMonotoneAlgebra (P : Problem) :
   end.
 
 Next Obligation.
-Proof with try discr; auto.
-  destruct_call simplify... 
+Proof.
+  destruct_call simplify; try discr; auto. 
   clear Heq_anonymous s.
-  apply WF_incl with (red (H0 ++ R')). apply red_incl...
-  apply rule_elimination with (rp m m0)...
+  apply WF_incl with (red (H0 ++ R')). apply red_incl; try discr; auto.
+  apply rule_elimination with (rp m m0); try discr; auto.
 Qed.
 Next Obligation.
-Proof with try discr; auto.
-  destruct_call simplify... 
+Proof.
+  destruct_call simplify; try discr; auto. 
   apply WF_incl with (hd_red_mod T (H0 ++ R')).
-  comp. apply hd_red_incl...
-  apply rule_elimination_hd_mod with (wrp wm)...
+  comp. apply hd_red_incl; try discr; auto.
+  apply rule_elimination_hd_mod with (wrp wm); try discr; auto.
 Qed.
 Next Obligation.
-Proof with try discr; auto.
-  do 2 destruct_call simplify... 
+Proof.
+  do 2 destruct_call simplify; try discr; auto. 
   clear Heq_anonymous s0 Heq_anonymous0 s.
   apply WF_incl with (red_mod (H1 ++ T') (H0 ++ R')).
-  comp. apply rtc_incl. apply red_incl... apply red_incl...
-  apply rule_elimination_mod with (rp m m0)...
+  comp. apply rtc_incl. apply red_incl; try discr; auto. apply red_incl; try discr; auto.
+  apply rule_elimination_mod with (rp m m0); try discr; auto.
 Qed.
 
 End prover.
@@ -220,8 +220,8 @@ Variable sm_default : forall f, (monP sm)
 Lemma wm_default : forall f,
   (monP wm) (buildSymInt (defaultIntForSymbol f)).
 
-Proof with auto.
-  intros. apply sm_imp_wm...
+Proof.
+  intros. apply sm_imp_wm; auto.
 Qed.
 
 Section monotonicityChecker.
@@ -239,9 +239,9 @@ Program Definition check_wm : option (monotone I succeq) :=
   end.
 
 Next Obligation.
-Proof with auto.
+Proof.
   intro f. apply (mon_ok wm (buildSymInt (buildInt f))).
-  destruct_call checkProp... 
+  destruct_call checkProp; auto. 
 Qed.
 
 Program Definition check_sm : 
@@ -253,13 +253,13 @@ Program Definition check_sm :
   end.
 
 Next Obligation.
-Proof with auto.
+Proof.
   split; intro f.
   apply (mon_ok wm (buildSymInt (buildInt f))).
   apply sm_imp_wm.
-  destruct_call checkProp...
+  destruct_call checkProp; auto.
   apply (mon_ok sm (buildSymInt (buildInt f))).
-  destruct_call checkProp... 
+  destruct_call checkProp; auto.
 Qed.
 
 End monotonicityChecker.

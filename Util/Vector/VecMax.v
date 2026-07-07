@@ -12,7 +12,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import VecUtil NatUtil LogicUtil.
 
-Notation nats := (vector nat).
+Abbreviation nats := (vector nat).
 
 (***********************************************************************)
 (** max *)

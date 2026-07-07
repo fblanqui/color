@@ -5,7 +5,7 @@ license: "CeCILL-2.1"
 bug-reports: "https://github.com/fblanqui/color/issues"
 depends: [
   "ocaml"
-  "rocq-prover" {>= "9.0"}
+  "rocq-prover" {>= "9.2"}
   "rocq-bignums" {>= "9.0"}
 ]
 build: [make "-j%{jobs}%"]
@@ -30,7 +30,7 @@ authors: [
   "Sorin Stratulat"
 ]
 tags: [
-  "date:2025-11-11"
+  "date:2026-07-07"
   
   "logpath:CoLoR"
 

@@ -130,7 +130,7 @@ Section Morphism.
     rewrite Ft_sub. refl. rewrite Ft_sub. refl.
   Qed.
 
-  Lemma Fred_rtc : forall R t u, red R # t u -> red (Frs R) # (Ft t) (Ft u).
+  Lemma Fred_rtc : forall R t u, (red R) # t u -> (red (Frs R)) # (Ft t) (Ft u).
 
   Proof.
     induction 1; intros. apply rt_step. apply Fred. hyp.

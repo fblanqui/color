@@ -21,13 +21,13 @@ Section eta_top.
 
   Variables F X : Type.
 
-  Notation Te := (@Te F X).
+  Abbreviation Te := (@Te F X).
 
   Variable ens_X : Ens X.
 
-  Notation In := (@Ens_In X ens_X).
-  Notation fv := (@fv F X ens_X).
-  Notation Var := (@Var F X).
+  Abbreviation In := (@Ens_In X ens_X).
+  Abbreviation fv := (@fv F X ens_X).
+  Abbreviation Var := (@Var F X).
 
   Inductive eta_top : relation Te :=
   | eta_top_intro : forall x u,
@@ -42,15 +42,15 @@ Module Make (Export L : L_Struct).
 
   Module Export A := LAlpha.Make L.
 
-  Notation In := (@Ens_In X ens_X).
+  Abbreviation In := (@Ens_In X ens_X).
 
-  Notation eta_top := (@eta_top F X ens_X).
+  Abbreviation eta_top := (@eta_top F X ens_X).
   Infix "->eh" := eta_top (at level 70).
 
-  Notation eta := (clos_mon eta_top).
+  Abbreviation eta := (clos_mon eta_top).
   Infix "->e" := (clos_mon eta_top) (at level 70).
 
-  Notation eta_aeq := (clos_aeq eta).
+  Abbreviation eta_aeq := (clos_aeq eta).
   Infix "=>e" := (clos_aeq eta) (at level 70).
 
 (****************************************************************************)

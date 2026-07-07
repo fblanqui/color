@@ -11,7 +11,7 @@ Set Implicit Arguments.
 
 From CoLoR Require Import VecUtil LogicUtil.
 
-Notation bools := (vector bool).
+Abbreviation bools := (vector bool).
 
 Fixpoint Vtrue n (bs : bools n) : nat :=
   match bs with

@@ -16,8 +16,8 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig).
-  Notation rule := (rule Sig). Notation rules := (list rule).
+  Abbreviation term := (term Sig).
+  Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
 
 (***********************************************************************)
 (** Manna-Ness theorem (1970) *)
@@ -72,16 +72,16 @@ several steps of R1 followed by a -head- step of R2 *)
         WF (red_mod Ege Rge) ->
         WF (red_mod (Egt ++ Ege) (Rgt ++ Rge)).
 
-      Proof with auto.
+      Proof.
         intros. apply WF_incl with ((red Egt U red Ege)# @ (red Rgt U red Rge)).
-        comp. apply rtc_incl. incl_trans (red Egt U red Ege)...
+        comp. apply rtc_incl. incl_trans (red Egt U red Ege); auto.
         apply red_union.
         apply red_union.
-        apply wf_rel_mod...
-        apply WF_incl with ((red (Rge ++ Ege)# @ (red (Rgt ++ Egt)))).
+        apply wf_rel_mod; auto.
+        apply WF_incl with (((red (Rge ++ Ege))# @ (red (Rgt ++ Egt)))).
         comp. apply rtc_incl. apply red_union_inv.
         apply red_union_inv.
-        apply manna_ness_mod with rp; apply compat_app...
+        apply manna_ness_mod with rp; apply compat_app; auto.
       Qed.
 
       Lemma rule_elimination_hd_mod : forall wp : Weak_reduction_pair Sig,
@@ -91,16 +91,16 @@ several steps of R1 followed by a -head- step of R2 *)
         WF (hd_red_mod E Rge) -> 
         WF (hd_red_mod E (Rgt ++ Rge)).
 
-      Proof with auto.
-        intros. apply WF_incl with (red E # @ (hd_red Rgt U hd_red Rge)).
+      Proof.
+        intros. apply WF_incl with ((red E) # @ (hd_red Rgt U hd_red Rge)).
         comp. apply hd_red_union. 
-        apply wf_rel_mod_simpl...
+        apply wf_rel_mod_simpl; auto.
         apply WF_incl with (hd_red_mod (Rge ++ E) Rgt).
         comp. apply rtc_incl.
         incl_trans (red Rge U red E). union. apply hd_red_incl_red.
         apply red_union_inv.
-        apply manna_ness_hd_mod with wp...
-        apply compat_app...
+        apply manna_ness_hd_mod with wp; auto.
+        apply compat_app; auto.
       Qed.
 
     End mod.
@@ -111,12 +111,12 @@ several steps of R1 followed by a -head- step of R2 *)
       WF (red Rge) -> 
       WF (red (Rgt ++ Rge)).
 
-    Proof with auto.
+    Proof.
       intros. eapply WF_incl. apply red_incl_red_mod.
       change (nil (A:=rule)) with (nil (A:=rule) ++ nil).
-      apply rule_elimination_mod with rp...
+      apply rule_elimination_mod with rp; auto.
       apply compat_empty. apply compat_empty.
-      apply WF_incl with (red Rge)... apply red_mod_empty_incl_red.
+      apply WF_incl with (red Rge); auto. apply red_mod_empty_incl_red.
     Qed.
 
     Lemma rule_elimination_hd_red : forall wp : Weak_reduction_pair Sig,
@@ -125,11 +125,11 @@ several steps of R1 followed by a -head- step of R2 *)
       WF (hd_red Rge) -> 
       WF (hd_red (Rgt ++ Rge)).
 
-    Proof with auto.
+    Proof.
       intros. eapply WF_incl. apply hd_red_incl_hd_red_mod.
-      apply rule_elimination_hd_mod with wp...
+      apply rule_elimination_hd_mod with wp; auto.
       apply compat_empty.
-      apply WF_incl with (hd_red Rge)... apply hd_red_mod_empty_incl_hd_red.
+      apply WF_incl with (hd_red Rge); auto. apply hd_red_mod_empty_incl_hd_red.
     Qed.
 
   End rule_elimination.

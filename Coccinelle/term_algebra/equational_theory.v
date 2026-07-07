@@ -42,6 +42,7 @@ Module Make (T1 : term_spec.Term)  <: EqTh with Module T:=T1.
     R t1 t2 -> axiom R (apply_subst sigma t1) (apply_subst sigma t2).
 
 (** *** One step at any position. *)
+  #[warnings="-register-all"]
   Inductive one_step (R : relation term) : term -> term -> Prop :=
   | at_top : forall t1 t2, axiom R t1 t2 -> one_step R t1 t2
   | in_context : forall f l1 l2, one_step_list (one_step R) l1 l2 -> one_step R (Term f l1) (Term f l2).

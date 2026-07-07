@@ -30,6 +30,7 @@ Module RPO (PT : VPrecedenceType).
 
   Parameter eq_st : forall f g, f =F= g -> status f = status g.
 
+  #[warnings="-register-all"]
   Inductive lt_rpo : relation term :=
     | rpo1 : forall f g ss ts, g <F f -> 
         (forall t, In t ts -> lt_rpo t (Fun f ss)) -> 

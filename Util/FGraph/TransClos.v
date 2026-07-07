@@ -246,7 +246,7 @@ the transitive closure of [id x y U g] *)
   Qed.
 
   Lemma rel_trans_add_edge : forall x y g,
-    Transitive g -> trans_add_edge x y g == add_edge x y g!.
+    Transitive g -> trans_add_edge x y g == (add_edge x y g)!.
 
   Proof.
     intros x y g tg. cut (Transitive (trans_add_edge x y g)).
@@ -399,7 +399,7 @@ using the function [trans_add_edge] now *)
     Qed.
 
     Lemma rel_trans_add_edge_list : forall g a, Transitive g ->
-      trans_add_edge_list g a == add_edge_list g a!.
+      trans_add_edge_list g a == (add_edge_list g a)!.
 
     Proof.
       intros g a tg. unfold trans_add_edge_list, add_edge_list. destruct (f a).
@@ -442,7 +442,7 @@ using the function [trans_add_edge] now *)
 (** iteration of [trans_add_edge_list] on a list of elements of [A] *)
 
     Lemma rel_list_fold_left_trans_add_edge_list : forall l g, Transitive g ->
-      fold_left trans_add_edge_list l g == fold_left add_edge_list l g!.
+      fold_left trans_add_edge_list l g == (fold_left add_edge_list l g)!.
 
     Proof.
       induction l; simpl. intros. sym. apply trans_tc. hyp.
@@ -475,7 +475,7 @@ using the function [trans_add_edge] now *)
     Qed.
 
     Lemma rel_trans_clos_list : forall l,
-      trans_clos_list l == fold_left add_edge_list l empty!.
+      trans_clos_list l == (fold_left add_edge_list l empty)!.
 
     Proof.
       intro l. unfold trans_clos_list.

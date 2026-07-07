@@ -20,7 +20,7 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation bterm := (bterm Sig).
+  Abbreviation bterm := (bterm Sig).
 
   Definition PolyInterpretation := forall f : Sig, poly (arity f).
 

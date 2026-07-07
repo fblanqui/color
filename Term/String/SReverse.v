@@ -20,18 +20,18 @@ Variable Sig : Signature.
 
 Definition reverse (e : rule Sig) := let (l,r) := e in mkRule (rev' l) (rev' r).
 
-Notation reverses := (List.map reverse).
+Abbreviation reverses := (List.map reverse).
 
 Lemma red_rev : forall R t u, red R t u -> red (reverses R) (rev' t) (rev' u).
 
 Proof.
-intros. redtac. unfold fill. rewrite !rev'_app, !app_ass.
+intros. redtac. unfold fill. rewrite !rev'_app, <- !app_assoc.
 ex (rev' l) (rev' r) (mkContext (rev' (rgt c)) (rev' (lft c))). intuition.
 change (In (reverse (mkRule l r)) (reverses R)). apply in_map. exact H.
 Qed.
 
 Lemma red_rev_rtc : forall E t u,
-  red E # t u -> red (reverses E) # (rev' t) (rev' u).
+  (red E) # t u -> (red (reverses E)) # (rev' t) (rev' u).
 
 Proof.
 intros. elim H; intros. apply rt_step. apply red_rev. exact H0.

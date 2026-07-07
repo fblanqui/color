@@ -16,9 +16,9 @@ Section TerminationProblem.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig).
-  Notation rule := (rule Sig).
-  Notation trs := (list rule).
+  Abbreviation term := (term Sig).
+  Abbreviation rule := (rule Sig).
+  Abbreviation trs := (list rule).
 
   Inductive Problem : Type :=
   | FullTerm (R : trs)

@@ -188,6 +188,7 @@ absurd (R t1 (Var v2)); trivial.
 discriminate.
 Qed.
 
+#[warnings="-register-all"]
 Inductive Psi : relation term :=
    | Psi_at_top : forall s t, axiom R s t -> (inner R) t -> Psi s t
    | Psi_in_context : 

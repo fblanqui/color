@@ -65,7 +65,7 @@ End BCmpTransLeibniz.
 (****************************************************************************)
 (** ** Types of System T. *)
 
-Notation TNat := (Base Nat).
+Abbreviation TNat := (Base Nat).
 
 (** [Cmp] structure for System T types. *)
 
@@ -156,20 +156,20 @@ Module L_SystemT <: L_Struct.
 
   Module Export V := NatVar.
 
-  Notation Te := (Te F X).
-  Notation Tes := (vector Te).
+  Abbreviation Te := (Te F X).
+  Abbreviation Tes := (vector Te).
 
-  Notation Var := (@Var F X).
-  Notation Fun := (@Fun F X).
-  Notation App := (@App F X).
-  Notation Lam := (@Lam F X).
+  Abbreviation Var := (@Var F X).
+  Abbreviation Fun := (@Fun F X).
+  Abbreviation App := (@App F X).
+  Abbreviation Lam := (@Lam F X).
 
-  Notation apps := (@apps F X).
-  Notation fv := (@fv F X ens_X).
-  Notation eq_term_dec := (@eq_term_dec F X FOrd.eq_dec XOrd.eq_dec).
+  Abbreviation apps := (@apps F X).
+  Abbreviation fv := (@fv F X ens_X).
+  Abbreviation eq_term_dec := (@eq_term_dec F X FOrd.eq_dec XOrd.eq_dec).
 
-  Notation FZero := (Fun Zero).
-  Notation FSucc := (Fun Succ).
+  Abbreviation FZero := (Fun Zero).
+  Abbreviation FSucc := (Fun Succ).
   Definition FRec A := Fun (Rec A).
 
 End L_SystemT.
@@ -235,9 +235,9 @@ Module ST_SystemT <: ST_Struct.
 
   Definition So := B.
 
-  Notation Ty := (Ty So).
+  Abbreviation Ty := (Ty So).
 
-  Notation TNat := (Base Nat).
+  Abbreviation TNat := (Base Nat).
 
   Definition typ f :=
     match f with
@@ -248,13 +248,13 @@ Module ST_SystemT <: ST_Struct.
 
   Module Export XMap := FMapAVL.Make XOrd.
 
-  Notation En := (@XMap.t Ty).
-  Notation empty := (@XMap.empty Ty).
-  Notation add := (@XMap.add Ty).
-  Notation In := (@XMap.In Ty).
-  Notation MapsTo := (@XMap.MapsTo Ty).
-  Notation Equal := (@XMap.Equal Ty).
-  Notation env := (mk_Env empty add In MapsTo Equal).
+  Abbreviation En := (@XMap.t Ty).
+  Abbreviation empty := (@XMap.empty Ty).
+  Abbreviation add := (@XMap.add Ty).
+  Abbreviation In := (@XMap.In Ty).
+  Abbreviation MapsTo := (@XMap.MapsTo Ty).
+  Abbreviation Equal := (@XMap.Equal Ty).
+  Abbreviation env := (mk_Env empty add In MapsTo Equal).
 
 End ST_SystemT.
 
@@ -285,8 +285,8 @@ Module DLQO_SystemT <: DLQO_Struct.
 
   Definition filter (_ : F) := [0].
 
-  Notation gt_call := (@gt_call F X C code gtC).
-  Notation gt_args_lex := (@gt_args_lex F X FOrd.eq_dec XOrd.eq_dec ens_X
+  Abbreviation gt_call := (@gt_call F X C code gtC).
+  Abbreviation gt_args_lex := (@gt_args_lex F X FOrd.eq_dec XOrd.eq_dec ens_X
     var_notin C filter_arity filter).
 
 End DLQO_SystemT.
@@ -359,8 +359,8 @@ Module BI_SystemT <: BI_Struct.
 
   Proof. inversion hi; subst; simpl; clear hi. fo. Qed.
 
-  Notation aeq := (@aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation supterm_acc := (@supterm_acc F X So typ Acc Acc_arity).
+  Abbreviation aeq := (@aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation supterm_acc := (@supterm_acc F X So typ Acc Acc_arity).
 
 End BI_SystemT.
 
@@ -373,7 +373,7 @@ Module CC_SystemT <: CC_Struct.
 
   Module Export BI := BI_SystemT.
 
-  Notation cc := (@cc F X So ens_X env typ Acc Acc_arity).
+  Abbreviation cc := (@cc F X So ens_X env typ Acc Acc_arity).
 
 End CC_SystemT.
 

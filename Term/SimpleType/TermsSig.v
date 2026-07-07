@@ -10,6 +10,8 @@ for the development of theory of simpe typed lambda-calculus.
 
 Set Implicit Arguments.
 
+Create HintDb terms.
+
 Module Type BaseTypes.
 
    (* Base types; denoted as a, b, c, ... *)
@@ -40,7 +42,7 @@ Module SimpleTypes (BT : BaseTypes).
     | ArrowType(A B : SimpleType).
   Notation "x --> y" := (ArrowType x y) 
     (at level 55, right associativity) : type_scope.
-  Notation "# x " := (BasicType x) (at level 0) : type_scope.
+  Notation "# x " := (BasicType x) (at level 1) : type_scope.
   Implicit Types A B C : SimpleType.
   #[global] Hint Constructors SimpleType : terms.
 

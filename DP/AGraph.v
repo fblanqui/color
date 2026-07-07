@@ -19,10 +19,10 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation terms := (vector term).
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
 
-  Notation rule := (rule Sig). Notation rules := (list rule).
-  Notation lhs := (@lhs Sig). Notation rhs := (@rhs Sig).
+  Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
+  Abbreviation lhs := (@lhs Sig). Abbreviation rhs := (@rhs Sig).
 
   Section hd_red_Mod.
 
@@ -131,7 +131,7 @@ Section S.
 (** relation between hd_red_Mod and chain *)
 
   Lemma hd_red_Mod_of_chain : forall R : rules,
-    chain R << hd_red_Mod (int_red R #) (dp R).
+    chain R << hd_red_Mod ((int_red R) #) (dp R).
 
   Proof. intros. unfold chain, hd_red_Mod. refl. Qed.
 

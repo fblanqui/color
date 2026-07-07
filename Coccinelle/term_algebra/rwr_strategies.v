@@ -10,6 +10,7 @@ Module Make (E : EqTh).
   Import E.
   Import T.
 
+#[warnings="-register-all"]
 Inductive P_step (R : relation term) (P : term -> Prop) : term -> term -> Prop :=
   | P_at_top : forall t s, P t -> axiom R s t -> P_step R P s t
   | P_in_context : forall f lt ls, one_step_list (P_step R P) ls lt -> P_step R P (Term f ls) (Term f lt).

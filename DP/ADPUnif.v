@@ -24,7 +24,7 @@ Section S.
 
     Variable Sig : Signature.
 
-    Notation rule := (rule Sig). Notation rules := (rules Sig).
+    Abbreviation rule := (rule Sig). Abbreviation rules := (rules Sig).
 
     Variables R D : rules.
 
@@ -35,7 +35,7 @@ Section S.
 
     Variable hypR : forallb (@is_notvar_lhs Sig) R = true.
 
-    Lemma dpg_unif_correct : hd_rules_graph (red R #) D << dpg_unif.
+    Lemma dpg_unif_correct : hd_rules_graph ((red R) #) D << dpg_unif.
 
     Proof.
       intros x y h. destruct h. decomp H0. unfold dpg_unif. intuition.
@@ -66,8 +66,8 @@ Section S.
         | _ => hd_eq (rhs r1) (lhs r2)
       end.
 
-    Notation mem := (mem (@beq_rule Sig)).
-    Notation mem_ok := (mem_ok (@beq_rule_ok Sig)).
+    Abbreviation mem := (mem (@beq_rule Sig)).
+    Abbreviation mem_ok := (mem_ok (@beq_rule_ok Sig)).
 
     Definition dpg_unif_N r1 r2 := mem r1 D && mem r2 D && connectable_N r1 r2.
 
@@ -92,7 +92,7 @@ Section S.
       rewrite (beq_refl (@beq_symb_ok Sig)). refl.
     Qed.
 
-    Lemma dpg_unif_N_correct : hd_rules_graph (red R #) D << Graph dpg_unif_N.
+    Lemma dpg_unif_N_correct : hd_rules_graph ((red R) #) D << Graph dpg_unif_N.
 
     Proof.
       incl_trans dpg_unif. apply dpg_unif_correct. intros r1 r2 h. destruct h.
@@ -118,7 +118,7 @@ Section S.
 
     Variable Sig : Signature.
 
-    Notation Sig' := (dup_sig Sig).
+    Abbreviation Sig' := (dup_sig Sig).
 
     Lemma undefined_hd_symb_dup_int_rules : forall f R,
       @defined Sig' (hd_symb Sig f) (dup_int_rules R) = false.
@@ -130,13 +130,13 @@ Section S.
 
     Variables R D : rules Sig.
 
-    Notation R' := (dup_int_rules R). Notation D' := (dup_hd_rules D).
+    Abbreviation R' := (dup_int_rules R). Abbreviation D' := (dup_hd_rules D).
 
     Variable hypR : forallb (@is_notvar_lhs Sig') R' = true.
     Variable hypD : forallb (@is_notvar_rhs Sig') D' = true.
 
     Lemma dpg_unif_N_mark_correct :
-      hd_rules_graph (red R' #) D' << Graph (dpg_unif_N R' D').
+      hd_rules_graph ((red R') #) D' << Graph (dpg_unif_N R' D').
 
     Proof.
       apply dpg_unif_N_correct. hyp. rewrite forallb_forall. intros.

@@ -21,15 +21,15 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig). Notation terms := (vector term).
-Notation rule := (rule Sig). Notation rules := (list rule).
-Notation lhs := (@lhs Sig). Notation rhs := (@rhs Sig).
+Abbreviation term := (term Sig). Abbreviation terms := (vector term).
+Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
+Abbreviation lhs := (@lhs Sig). Abbreviation rhs := (@rhs Sig).
 
 Variable R : rules.
 
 Variable hyp : rules_preserve_vars R.
 
-Notation DP := (dp R). Notation Chain := (chain R).
+Abbreviation DP := (dp R). Abbreviation Chain := (chain R).
 
 Lemma hyp' : rules_preserve_vars DP.
 
@@ -42,7 +42,7 @@ Qed.
 
 Definition dp_graph a1 a2 := In a1 DP /\ In a2 DP
   /\ exists p, exists s,
-    int_red R # (sub s (rhs a1)) (sub s (shift p (lhs a2))).
+    (int_red R) # (sub s (rhs a1)) (sub s (shift p (lhs a2))).
 
 Lemma restricted_dp_graph : is_restricted dp_graph DP.
 
@@ -54,7 +54,7 @@ Qed.
 (** chain relation for a given dependency pair *)
 
 Definition chain_dp a t u := In a DP /\
-  exists s, int_red R # t (sub s (lhs a)) /\ u = sub s (rhs a).
+  exists s, (int_red R) # t (sub s (lhs a)) /\ u = sub s (rhs a).
 
 Lemma chain_dp_chain : forall a, chain_dp a << Chain.
 
@@ -88,7 +88,7 @@ Proof. induction l; simpl; intros. refl. assoc. comp. apply IHl. Qed.
 Arguments chain_dps_app [l a b m] _ _ _.
 
 Lemma chain_dps_app' : forall a l m b p, a :: l = m ++ b :: p ->
-  chain_dps a l << chain_dps a (tail m) % @ chain_dps b p.
+  chain_dps a l << (chain_dps a (tail m)) % @ chain_dps b p.
 
 Proof.
 intros. destruct m; simpl in H; injection H; unfold inclusion; intros.
@@ -187,8 +187,8 @@ Variables (succ succ_eq : relation term)
   (Hcycle : forall a l, length l < length DP -> cycle_min dp_graph a l ->
     exists b, In b (a :: l) /\ succ (lhs b) (rhs b)).
 
-Notation eq_dec := (@eq_rule_dec Sig).
-Notation occur := (occur eq_dec).
+Abbreviation eq_dec := (@eq_rule_dec Sig).
+Abbreviation occur := (occur eq_dec).
 
 (***********************************************************************)
 (** compatibility properties of chains *)
@@ -198,7 +198,7 @@ Lemma chain_dp_hd_red_mod : forall a, chain_dp a << hd_red_mod R (a::nil).
 Proof.
 unfold inclusion. intros. destruct H. do 2 destruct H0. subst y.
 destruct a. simpl. simpl in H0. exists (sub x0 lhs). split.
-apply incl_elim with (R := int_red R #). apply rtc_incl.
+apply incl_elim with (R := (int_red R) #). apply rtc_incl.
 apply int_red_incl_red. exact H0. apply hd_red_rule. simpl. auto.
 Qed.
 
@@ -227,7 +227,7 @@ Lemma compat_chain_dp_strict : forall a,
 Proof.
 unfold inclusion. intros. destruct H0. do 2 destruct H1. subst y.
 apply (absorbs_left_rtc Habsorb). exists (sub x0 (lhs a)). split.
-apply incl_elim with (R := int_red R #). 2: exact H1.
+apply incl_elim with (R := (int_red R) #). 2: exact H1.
 apply rtc_incl.
 incl_trans (red R). apply int_red_incl_red. apply compat_red; hyp.
 destruct Hredord. apply H2. exact H.

@@ -20,7 +20,7 @@ Section S.
 
   Context {A : Type}.
 
-  Notation eq_dec_type := (forall x y : A, {x=y}+{~x=y}).
+  Abbreviation eq_dec_type := (forall x y : A, {x=y}+{~x=y}).
 
 (****************************************************************************)
 (** * Type for sets of elements of type [A] *)

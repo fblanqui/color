@@ -18,7 +18,7 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation beq_rule := (@beq_rule Sig).
+  Abbreviation term := (term Sig). Abbreviation beq_rule := (@beq_rule Sig).
 
   Variable R : rules Sig.
 
@@ -46,7 +46,7 @@ Section S.
     intros t x. destruct x. exact f.
   Defined.
 
-  Lemma FS_rtc : forall us t, FS t us -> red R # t (last us t).
+  Lemma FS_rtc : forall us t, FS t us -> (red R) # t (last us t).
 
   Proof.
     induction us. simpl. intros. apply rt_refl. simpl FS. intuition.
@@ -111,7 +111,7 @@ Section S.
 
   Arguments rewrites_correct [ds t us] _.
 
-  Notation default := (Var 0).
+  Abbreviation default := (Var 0).
 
   Lemma FS_red : forall ts t, FS t ts -> forall i, i < length ts ->
     red R (nth i (t::ts) default) (nth (S i) (t::ts) default).

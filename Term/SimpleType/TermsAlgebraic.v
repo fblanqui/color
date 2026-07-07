@@ -855,12 +855,12 @@ Module TermsAlgebraic (Sig : TermsSig.Signature).
       rewrite <- SL; rewrite <- SR; trivial.
       rewrite appArgs_app with (swap Mpos) Lapp.
       rewrite <- SL; rewrite Margs.
-      rewrite app_ass; auto with datatypes.
+      rewrite <- app_assoc; auto with datatypes.
       rewrite appArgs_app with (swap Npos) Rapp.
       rewrite <- SR; rewrite Nargs.
       rewrite (appBodyR_swap_in_appL MLpos Mpos); trivial.
       rewrite (appBodyR_swap_in_appL NLpos Npos); trivial.
-      rewrite app_ass; auto with datatypes.
+      rewrite <- app_assoc; auto with datatypes.
 
       set (Lapp := swap_right_app Mpos).
       set (Rapp := swap_right_app Npos).

@@ -13,6 +13,7 @@
 
 
 From Stdlib Require Import Recdef List Arith Setoid.
+Scheme All for list.
 From CoLoR Require Import closure more_list list_permut list_set decidable_set term_spec.
 From CoLoR.Util.Nat Require Import NatCompat.
 
@@ -30,11 +31,11 @@ Import F1.
 Module X := X1.
 Import X1.
 
-Notation symbol := Symb.A.
-Notation eq_symb_bool := Symb.eq_bool.
+Abbreviation symbol := Symb.A.
+Abbreviation eq_symb_bool := Symb.eq_bool.
 
-Notation variable := X.A.
-Notation eq_var_bool := X.eq_bool.
+Abbreviation variable := X.A.
+Abbreviation eq_var_bool := X.eq_bool.
 
 Module EX := decidable_set.Convert (X).
 Module VSet : 
@@ -59,7 +60,6 @@ Qed.
 
 (** Definition of terms. 
 Arity is not taken into account, and terms may be hill-formed. *)
-
 Inductive term : Type :=
   | Var : variable -> term
   | Term : symbol -> list term -> term.

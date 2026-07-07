@@ -70,9 +70,6 @@ Module SemiRing (SR : SemiRingType).
     apply A_plus_mult_distr_l.
   Qed.
 
-  Global Hint Rewrite Aplus_0_l Aplus_0_r Amult_0_l Amult_0_r 
-    Amult_1_l Amult_1_r : arith.
-
   Add Ring Aring : A_semi_ring.
 
 End SemiRing.

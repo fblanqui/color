@@ -32,20 +32,20 @@ Module Export Def.
       (eq_fun_dec : forall f g : F, {f=g}+{~f=g})
       (eq_var_dec : forall x y : X, {x=y}+{~x=y}).
 
-    Notation Te := (@Te F X).
+    Abbreviation Te := (@Te F X).
 
     (** We assume given a structure for finite sets on [X]. *)
 
     Variable ens_X : Ens X.
 
-    Notation In := (Ens_In ens_X).
-    Notation fv := (@fv F X ens_X).
+    Abbreviation In := (Ens_In ens_X).
+    Abbreviation fv := (@fv F X ens_X).
 
     (** We assume that [X] is infinite. *)
 
     Variable var_notin : Ens_type ens_X -> X.
 
-    Notation rename := (@rename F X eq_fun_dec eq_var_dec ens_X var_notin).
+    Abbreviation rename := (@rename F X eq_fun_dec eq_var_dec ens_X var_notin).
 
     (** Definition of alpha-equivalence. *)
 
@@ -91,7 +91,7 @@ Module Export Def.
 
     (** Alpha-equivalence on vectors of terms. *)
 
-    Notation vaeq := (Vforall2 aeq).
+    Abbreviation vaeq := (Vforall2 aeq).
 
     (** Component-wise extension to vectors of a relation on terms,
        modulo [vaeq]. *)
@@ -113,20 +113,20 @@ Module Make (Export L : L_Struct).
 
   (** Notations for alpha-equivalence and related definitions. *)
 
-  Notation aeq := (@aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation aeq_alpha :=
+  Abbreviation aeq := (@aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation aeq_alpha :=
     (@aeq_alpha F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation aeq_top := (@aeq_top F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation clos_aeq := (@clos_aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation clos_aeq_trans :=
+  Abbreviation aeq_top := (@aeq_top F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation clos_aeq := (@clos_aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation clos_aeq_trans :=
     (@clos_aeq_trans F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation clos_vaeq :=
+  Abbreviation clos_vaeq :=
     (@clos_vaeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
 
-  Notation vaeq := (Vforall2 aeq).
+  Abbreviation vaeq := (Vforall2 aeq).
   Infix "~~" := aeq (at level 70).
   Infix "~~~" := vaeq (at level 70).
-  Notation "R *" := (clos_aeq_trans R) (at level 35).
+  Notation "R '*'" := (clos_aeq_trans R) (at level 1).
 
   (** [aeq] is the smallest equivalence containing the monotone
   closure of [aeq_top]. *)
@@ -381,7 +381,7 @@ Module Make (Export L : L_Struct).
 (****************************************************************************)
 (** ** Alpha-equivalence on substitutions. *)
 
-  Notation saeq := (subs_rel aeq).
+  Abbreviation saeq := (subs_rel aeq).
 
   Global Instance fvcodom_saeq xs : Proper (saeq xs ==> Equal) (fvcodom xs).
 
@@ -1432,7 +1432,7 @@ while [subs (comp s1 s2) u = Lam y (Var x)] since [comp s1 s2 x = s2 y
     Variable R : relation Te.
     Infix "->R" := R (at level 70).
 
-    Notation R_aeq := (clos_aeq R) (only parsing).
+    Abbreviation R_aeq := (clos_aeq R) (only parsing).
     Infix "=>R" := (clos_aeq R) (at level 70).
 
     Infix "==>R" := (clos_vaeq R) (at level 70).

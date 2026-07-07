@@ -387,7 +387,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
 
      (* equality of environments *)
     rewrite envL, envRn, envRm. unfold liftedEnv; simpl.    
-    rewrite !finalSeg_full, Nat.add_comm, copy_split, app_ass; trivial.
+    rewrite !finalSeg_full, Nat.add_comm, copy_split, <- app_assoc; trivial.
 
      (* equality of preterms *)
     rewrite termL, termRn, termRm, Nat.add_comm. fold (prelift (term Pt) (n+m)).
@@ -807,7 +807,7 @@ Module TermsLifting (Sig : TermsSig.Signature).
     destruct (IHTypM1 k) as [L [LE [LPt LT]]]; trivial.
     destruct (IHTypM2 k) as [R [RE [RPt RT]]]; trivial.
     assert
-      (res: loweredEnv E k |- prelower_aux PtL k [prelower_aux PtR k] := B).
+      (res: loweredEnv E k |- (prelower_aux PtL k) [prelower_aux PtR k] := B).
     constructor 4 with A.
     rewrite <- LE.
     rewrite <- LPt.

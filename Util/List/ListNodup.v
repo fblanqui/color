@@ -119,14 +119,14 @@ Section S.
   Qed.
 
   Lemma nodup_incl_length_le :
-    forall l m : list A, nodup l -> l [= m -> length l <= length m.
+    forall l m : list A, nodup l -> l ⊆ m -> length l <= length m.
 
   Proof.
     induction l; simpl; intros m l_nodup lm. lia.
     destruct l_nodup as [a_notin_l l_nodup].
     assert (am : In a m). apply lm. fo.
     destruct (in_elim am) as [m1 [m2 e]]. subst.
-    assert (lm1m2 : l [= m1 ++ m2). intros x xl.
+    assert (lm1m2 : l ⊆ m1 ++ m2). intros x xl.
     assert (xal : In x (a :: l)). right. hyp.
     apply lm in xal. rewrite in_app in xal.
     assert (x <> a). intro. subst. contr. firstorder auto with datatypes exfalso.
@@ -207,7 +207,7 @@ Section S.
         end
     end.
 
-  Notation greatest_nodup_prefix := (greatest_nodup_prefix_aux nil).
+  Abbreviation greatest_nodup_prefix := (greatest_nodup_prefix_aux nil).
 
 (***********************************************************************)
 (** greatest_nodup_prefix properties *)
@@ -370,7 +370,7 @@ Section S.
     eapply nodup_remove; eauto.
   Qed.
 
-  Lemma remdup_incl : forall l, remdup l [= l.
+  Lemma remdup_incl : forall l, remdup l ⊆ l.
 
   Proof.
     induction l. simpl; unfold incl; auto.
@@ -379,7 +379,7 @@ Section S.
     right; apply IHl. eapply remove_In. eauto.
   Qed.
 
-  Lemma incl_remdup : forall l, l [= remdup l.
+  Lemma incl_remdup : forall l, l ⊆ remdup l.
 
   Proof.
     induction l. simpl; unfold incl; auto.

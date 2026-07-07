@@ -788,8 +788,8 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
 
   Proof with auto; try contr.
     apply wf_transp_WF. intro x.
-    destruct x...
-    apply Acc_intro. intros. destruct y...
+    destruct x. auto.
+    apply Acc_intro. intros. destruct y. auto. contr.
   Qed.
 
   Global Instance ge_refl : Reflexive ge.
@@ -836,8 +836,8 @@ Module TropicalOrdSemiRingT <: OrdSemiRingType.
 
   Proof with simpl; intuition.
     intros. 
-    destruct y; destruct x; destruct z; auto...
-    destruct H. simpl in *. lia. injection H. intros. subst...
+    destruct y; destruct x; destruct z; auto. simpl.
+    destruct H. simpl in *. lia. injection H. intros. subst. intuition. simpl. auto.
     destruct H. contr. discr.
   Qed.
 

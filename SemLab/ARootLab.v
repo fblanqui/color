@@ -30,11 +30,11 @@ End RootLab.
 
 Module RootSemLab (Import R : RootLab) <: FinSemLab.
 
-  Notation beq_symb_ok := (@beq_symb_ok Sig).
-  Notation eq_symb_dec := (@eq_symb_dec Sig).
+  Abbreviation beq_symb_ok := (@beq_symb_ok Sig).
+  Abbreviation eq_symb_dec := (@eq_symb_dec Sig).
 
-  Notation term := (term Sig). Notation terms := (vector term).
-  Notation rule := (rule Sig). Notation rules := (rules Sig).
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
+  Abbreviation rule := (rule Sig). Abbreviation rules := (rules Sig).
 
   Definition Sig := Sig.
 

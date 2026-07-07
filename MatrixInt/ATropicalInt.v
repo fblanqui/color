@@ -118,8 +118,8 @@ Module TropicalInt (Import AI : TTropicalInt).
       rewrite H1 in H0. hyp.
     Qed.
 
-    Notation mat_times_vec := (@mat_vec_prod dim dim).
-    Notation mint := (matrixInt dim).
+    Abbreviation mat_times_vec := (@mat_vec_prod dim dim).
+    Abbreviation mint := (matrixInt dim).
 
     Notation "x >_0 y" := (gtx x y) (at level 70).
 

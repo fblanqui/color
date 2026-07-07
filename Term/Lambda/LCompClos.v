@@ -34,38 +34,38 @@ Module Export Def.
 
     Variables F X : Type.
 
-    Notation Te := (@Te F X).
-    Notation Var := (@Var F X).
-    Notation Fun := (@Fun F X).
-    Notation Tes := (vector Te).
-    Notation call := (@call F X).
+    Abbreviation Te := (@Te F X).
+    Abbreviation Var := (@Var F X).
+    Abbreviation Fun := (@Fun F X).
+    Abbreviation Tes := (vector Te).
+    Abbreviation call := (@call F X).
 
     Variable So : Type.
 
-    Notation Ty := (@Ty So).
-    Notation Tys := (vector Ty).
+    Abbreviation Ty := (@Ty So).
+    Abbreviation Tys := (vector Ty).
 
     (** We assume given a structure for finite sets on [X]. *)
 
     Variable ens_X : Ens X.
 
-    Notation In := (Ens_In ens_X).
-    Notation fvs := (@fvs F X ens_X).
+    Abbreviation In := (Ens_In ens_X).
+    Abbreviation fvs := (@fvs F X ens_X).
 
     (** We assume given a set [En] for typing environments equipped with
        the following functions: *)
 
     Variable env : Env X So.
 
-    Notation En := (Env_type env).
-    Notation MapsTo := (Env_MapsTo env).
-    Notation add := (Env_add env).
+    Abbreviation En := (Env_type env).
+    Abbreviation MapsTo := (Env_MapsTo env).
+    Abbreviation add := (Env_add env).
 
     (** We assume given a type for each function symbol. *)
 
     Variable typ : F -> Ty.
 
-    Notation TypArgs := (@TypArgs F X So typ).
+    Abbreviation TypArgs := (@TypArgs F X So typ).
 
     (** For each symbol [f], we assume given a finite number of
        accessible arguments. *)
@@ -198,8 +198,8 @@ Module Type CC_Struct.
 
   (** Some notations. *)
 
-  Notation caeq := (@caeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation cc := (@cc F X So ens_X env typ Acc Acc_arity).
+  Abbreviation caeq := (@caeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation cc := (@cc F X So ens_X env typ Acc Acc_arity).
 
 End CC_Struct.
 

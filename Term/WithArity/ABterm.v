@@ -16,7 +16,7 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig). Notation terms := (vector term).
+Abbreviation term := (term Sig). Abbreviation terms := (vector term).
 
 Section bterm.
 
@@ -36,7 +36,7 @@ Set Elimination Schemes.
 (***********************************************************************)
 (** induction principles *)
 
-Notation bterms := (vector bterm).
+Abbreviation bterms := (vector bterm).
 
 Section bterm_rect_def.
 
@@ -79,7 +79,7 @@ Fixpoint term_of_bterm (bt : bterm) : term :=
 (***********************************************************************)
 (** injection of term into bterm *)
 
-Notation max_le := (maxvar_le k).
+Abbreviation max_le := (maxvar_le k).
 
 Fixpoint inject_term (t : term) : max_le t -> bterm :=
   match t as t0 return max_le t0 -> bterm with
@@ -133,8 +133,8 @@ Qed.
 
 Variables (I : interpretation Sig) (xint : valuation I).
 
-Notation D := (domain I).
-Notation fint := (fint I).
+Abbreviation D := (domain I).
+Abbreviation fint := (fint I).
 
 Fixpoint bterm_int (t : bterm) { struct t } : D :=
   match t with
@@ -153,7 +153,7 @@ Section term_int.
 
 Variables (I : interpretation Sig) (xint : valuation I).
 
-Notation D := (domain I).
+Abbreviation D := (domain I).
 
 Let P (t : term) := forall (k : nat) (H : maxvar_le k t),
   bterm_int xint (inject_term H) = term_int xint t.

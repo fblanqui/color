@@ -21,7 +21,7 @@ Module BT <: BaseTypes.
 
   Lemma baseTypesNotEmpty : BaseType.
 
-  Proof Star.
+  Proof. exact Star. Qed.
 
 End BT.
 

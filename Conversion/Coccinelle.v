@@ -56,8 +56,8 @@ From CoLoR Require Import term SN ASubstitution.
 
 Module Make_Term (Import S : SIG) <: Term.
 
-  Notation aterm := (term Sig). Notation aterms := (vector aterm).
-  Notation AVar := ATerm.Var.
+  Abbreviation aterm := (term Sig). Abbreviation aterms := (vector aterm).
+  Abbreviation AVar := ATerm.Var.
 
   Module Sig := Make_Signature S.
 
@@ -124,7 +124,7 @@ Module Make_Term (Import S : SIG) <: Term.
 
 Import more_list.
 
-Notation find := (@find _ eq_var_bool _).
+Abbreviation find := (@find _ eq_var_bool _).
 
   Lemma find_sub_of_asub : forall s n v, find v (sub_of_asub s n) =
     if bgt_nat n v then Some (term_of_aterm (s v)) else None.
@@ -213,7 +213,7 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
 
   Module Import Rpo := rpo.Make Term.
 
-  Notation rpo := (rpo Prec P.bb).
+  Abbreviation rpo := (rpo Prec P.bb).
 
   Definition Sig := Sig.
   Definition succ := transp (Rof rpo term_of_aterm).
@@ -236,9 +236,9 @@ Module WP_RPO (Import P : PRECEDENCE) <: WeakRedPair.
     apply rpo_subst. hyp.
   Qed.
 
-  Notation empty_rpo_infos := (empty_rpo_infos Prec P.bb).
-  Notation rpo_eval := (rpo_eval empty_rpo_infos P.bb).
-  Notation rpo_eval_is_sound := (rpo_eval_is_sound_weak empty_rpo_infos P.bb).
+  Abbreviation empty_rpo_infos := (empty_rpo_infos Prec P.bb).
+  Abbreviation rpo_eval := (rpo_eval empty_rpo_infos P.bb).
+  Abbreviation rpo_eval_is_sound := (rpo_eval_is_sound_weak empty_rpo_infos P.bb).
 
   Import ordered_set.
 

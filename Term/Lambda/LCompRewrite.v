@@ -91,14 +91,14 @@ Module Make (Export RS : RS_Struct).
   (** Rewriting is defined as the alpha-closure of the monotone
   closure of the substitution closure of the set of rules. *)
 
-  Notation Sh := (clos_subs rule).
+  Abbreviation Sh := (clos_subs rule).
   Infix "->Sh" := (clos_subs rule) (at level 70).
 
-  Notation succ := Datatypes.S.
-  Notation S := (clos_mon Sh).
+  Abbreviation succ := Datatypes.S.
+  Abbreviation S := (clos_mon Sh).
   Infix "->S" := (clos_mon Sh) (at level 70).
 
-  Notation S_aeq := (clos_aeq S).
+  Abbreviation S_aeq := (clos_aeq S).
   Infix "=>S" := (clos_aeq S) (at level 70).
 
   (** Rewriting is stable by substitution. *)
@@ -252,10 +252,10 @@ Module CP_beta_eta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
   Definition Rh := beta_top U eta_top U Sh.
   Infix "->Rh" := Rh (at level 70).
 
-  Notation R := (clos_mon Rh).
+  Abbreviation R := (clos_mon Rh).
   Infix "->R" := (clos_mon Rh) (at level 70).
 
-  Notation R_aeq := (clos_aeq R).
+  Abbreviation R_aeq := (clos_aeq R).
   Infix "=>R" := (clos_aeq R) (at level 70).
 
   Lemma R_aeq_alt : R_aeq == beta_aeq U eta_aeq U S_aeq.
@@ -415,10 +415,10 @@ Module CP_beta_eta_rewrite (Import RS : RS_Struct) <: LComp.CP_Struct.
 
   Import LComp.
 
-  Notation cp_aeq := (Proper (A.aeq ==> impl)) (only parsing).
-  Notation cp_sn := (@cp_sn F X R_aeq).
-  Notation cp_red := (@cp_red F X R_aeq).
-  Notation cp_neutral := (@cp_neutral F X R_aeq neutral).
-  Notation cp := (@cp F X A.aeq R_aeq neutral).
+  Abbreviation cp_aeq := (Proper (A.aeq ==> impl)) (only parsing).
+  Abbreviation cp_sn := (@cp_sn F X R_aeq).
+  Abbreviation cp_red := (@cp_red F X R_aeq).
+  Abbreviation cp_neutral := (@cp_neutral F X R_aeq neutral).
+  Abbreviation cp := (@cp F X A.aeq R_aeq neutral).
 
 End CP_beta_eta_rewrite.

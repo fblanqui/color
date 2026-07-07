@@ -17,6 +17,7 @@ From CoLoR Require Export TransClosure closure more_list.
 Inductive one_step_list A (R : relation A) : relation (list A) :=
     | head_step : forall t1 t2 l, R t1 t2 -> one_step_list R (t1 :: l) (t2 :: l)
     | tail_step : forall t l1 l2, one_step_list R l1 l2 -> one_step_list R (t :: l1) (t :: l2).
+(*Scheme All for one_step_list. makes term_orderings/modular_dp.v fails with Rocq 9.2*)
 
 Lemma one_step_list_incl : 
   forall A (R1 R2 : relation A), (forall a1 a2, R1 a1 a2 -> R2 a1 a2) -> 

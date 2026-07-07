@@ -16,8 +16,8 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig). Notation terms := (vector term).
-Notation rule := (rule Sig). Notation rules := (list rule).
+Abbreviation term := (term Sig). Abbreviation terms := (vector term).
+Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
 
 (***********************************************************************)
 (** check whether [f] is defined by [l] *)

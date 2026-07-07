@@ -21,7 +21,7 @@ Section cp.
 
   Variables F X : Type.
 
-  Notation Te := (@Te F X).
+  Abbreviation Te := (@Te F X).
 
   Variables (aeq R_aeq : relation Te) (neutral : set Te).
 
@@ -29,7 +29,7 @@ Section cp.
 
   (** A computability predicate must be compatible with alpha-equivalence. *)
 
-  Notation cp_aeq := (Proper (aeq ==> impl)) (only parsing).
+  Abbreviation cp_aeq := (Proper (aeq ==> impl)) (only parsing).
 
   (** A computability predicate contains strongly normalizing terms. *)
 
@@ -68,13 +68,13 @@ Module Type CP_Struct.
 
   Declare Module Export L : L_Struct.
 
-  Notation subs := (@subs F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation aeq := (@aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation clos_aeq := (@clos_aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation clos_vaeq :=
+  Abbreviation subs := (@subs F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation aeq := (@aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation clos_aeq := (@clos_aeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation clos_vaeq :=
     (@clos_vaeq F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation beta_top := (@beta_top F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
-  Notation eta_top := (@eta_top F X ens_X).
+  Abbreviation beta_top := (@beta_top F X FOrd.eq_dec XOrd.eq_dec ens_X var_notin).
+  Abbreviation eta_top := (@eta_top F X ens_X).
 
   Infix "->bh" := beta_top (at level 70).
   Infix "->eh" := eta_top (at level 70).
@@ -89,10 +89,10 @@ Module Type CP_Struct.
   (** We then denote by [->R] the monotone closure of [->Rh] and by
      [=>R] the closure by alpha-equivalence of [->R]. *)
 
-  Notation R := (clos_mon Rh).
+  Abbreviation R := (clos_mon Rh).
   Infix "->R" := (clos_mon Rh) (at level 70).
 
-  Notation R_aeq := (clos_aeq R).
+  Abbreviation R_aeq := (clos_aeq R).
   Infix "=>R" := (clos_aeq R) (at level 70).
 
   Infix "==>R" := (clos_vaeq R) (at level 70).
@@ -117,18 +117,18 @@ Module Type CP_Struct.
 
   (** Some notations. *)
 
-  Notation cp_aeq := (Proper (aeq ==> impl)) (only parsing).
-  Notation cp_sn := (@cp_sn F X R_aeq).
-  Notation cp_red := (@cp_red F X R_aeq).
-  Notation cp_neutral := (@cp_neutral F X R_aeq neutral).
-  Notation cp := (@cp F X aeq R_aeq neutral).
+  Abbreviation cp_aeq := (Proper (aeq ==> impl)) (only parsing).
+  Abbreviation cp_sn := (@cp_sn F X R_aeq).
+  Abbreviation cp_red := (@cp_red F X R_aeq).
+  Abbreviation cp_neutral := (@cp_neutral F X R_aeq neutral).
+  Abbreviation cp := (@cp F X aeq R_aeq neutral).
 
 End CP_Struct.
 
 (****************************************************************************)
 (** * CP structure for beta-reduction alone. *)
 
-Module CP_beta_eta (Import L : L_Struct) <: CP_Struct.
+Module CP_beta_eta (L : L_Struct) <: CP_Struct.
 
   Module L := L.
 
@@ -138,10 +138,10 @@ Module CP_beta_eta (Import L : L_Struct) <: CP_Struct.
   Definition Rh := beta_top U eta_top.
   Infix "->Rh" := Rh (at level 70).
 
-  Notation R := (clos_mon Rh).
+  Abbreviation R := (clos_mon Rh).
   Infix "->R" := (clos_mon Rh) (at level 70).
 
-  Notation R_aeq := (clos_aeq R).
+  Abbreviation R_aeq := (clos_aeq R).
   Infix "=>R" := (clos_aeq R) (at level 70).
 
   Lemma R_aeq_alt : R_aeq == beta_aeq U eta_aeq.
@@ -212,11 +212,11 @@ Module CP_beta_eta (Import L : L_Struct) <: CP_Struct.
   (** Some notations. *)
   (*COQ: can we avoid to repeat these notations already declared in CP_Struct?*)
 
-  Notation cp_aeq := (Proper (aeq ==> impl)) (only parsing).
-  Notation cp_sn := (@cp_sn F X R_aeq).
-  Notation cp_red := (@cp_red F X R_aeq).
-  Notation cp_neutral := (@cp_neutral F X R_aeq neutral).
-  Notation cp := (@cp F X aeq R_aeq neutral).
+  Abbreviation cp_aeq := (Proper (aeq ==> impl)) (only parsing).
+  Abbreviation cp_sn := (@cp_sn F X R_aeq).
+  Abbreviation cp_red := (@cp_red F X R_aeq).
+  Abbreviation cp_neutral := (@cp_neutral F X R_aeq neutral).
+  Abbreviation cp := (@cp F X aeq R_aeq neutral).
 
   (** Extra properties. *)
 
@@ -245,7 +245,7 @@ End CP_beta_eta.
 
 Module Make (Export CP : CP_Struct).
 
-  Notation arr := (@arr F X).
+  Abbreviation arr := (@arr F X).
 
   Module Export B := LBeta.Make L.
   Module Export E := LEta.Make L.
@@ -352,7 +352,7 @@ Module Make (Export CP : CP_Struct).
 
   Infix "=>R*" := (R_aeq* ) (at level 70).
 
-  Notation satc := (subs_rel (R_aeq* )).
+  Abbreviation satc := (subs_rel (R_aeq* )).
 
   Lemma subs_satc u s s' : satc (fv u) s s' -> subs s u =>R* subs s' u.
 

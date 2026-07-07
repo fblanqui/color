@@ -17,7 +17,7 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation string := (list Sig).
+Abbreviation string := (list Sig).
 
 (***********************************************************************)
 (** contexts and replacement of the hole *)

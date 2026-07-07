@@ -18,7 +18,7 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation terms := (vector term).
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
 
 (***********************************************************************)
 (** definition of substitutions as interpretations in terms *)
@@ -242,7 +242,7 @@ Section S.
     Lemma svars_app l2 : forall l1, svars (l1 ++ l2) = svars l1 ++ svars l2.
 
     Proof.
-      induction l1; simpl; intros. refl. rewrite IHl1, app_ass. refl.
+      induction l1; simpl; intros. refl. rewrite IHl1, <- app_assoc. refl.
     Qed.
 
     Lemma incl_svars l1 l2 : incl l1 l2 -> incl (svars l1) (svars l2).
@@ -375,7 +375,7 @@ maxvar_union n s1 s2 x = s1 x if x < n, and s2 x otherwise *)
 (***********************************************************************)
 (** restriction of a substitution *)
 
-  Notation Inb := (Inb eq_nat_dec).
+  Abbreviation Inb := (Inb eq_nat_dec).
 
   Definition restrict (s : substitution) (l : variables) : substitution :=
     fun x => if Inb x l then s x else Var x.
@@ -419,7 +419,7 @@ maxvar_union n s1 s2 x = s1 x if x < n, and s2 x otherwise *)
 (***********************************************************************)
 (** substitution on contexts *)
 
-  Notation context := (context Sig).
+  Abbreviation context := (context Sig).
 
   Fixpoint subc (s : substitution) (c : context) : context :=
     match c with

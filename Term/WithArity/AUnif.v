@@ -18,8 +18,8 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig). Notation terms := (vector term).
-Notation substitution := (substitution Sig).
+Abbreviation term := (term Sig). Abbreviation terms := (vector term).
+Abbreviation substitution := (substitution Sig).
 
 Ltac case_beq_symb := ASignature.case_beq_symb Sig.
 
@@ -363,7 +363,7 @@ Qed.
 (***********************************************************************)
 (** step function *)
 
-Notation beq_symb := (@beq_symb Sig).
+Abbreviation beq_symb := (@beq_symb Sig).
 
 Definition step (p : problem) :=
   match p with
@@ -444,7 +444,7 @@ Qed.
 (***********************************************************************)
 (** size-based multiset ordering on equations *)
 
-Notation nb_symb_occs := (@nb_symb_occs Sig).
+Abbreviation nb_symb_occs := (@nb_symb_occs Sig).
 
 Definition size e := nb_symb_occs (fst e) + nb_symb_occs (snd e).
 
@@ -1056,9 +1056,9 @@ Proof. unfold mk_problem. simpl. auto. Qed.
 
 Definition unifiable u v := exists s, is_sol s (mk_problem u v).
 
-Notation In := List.In.
-Notation In_dec := (List.In_dec eq_nat_dec).
-Notation vars := (@ATerm.vars Sig).
+Abbreviation In := List.In.
+Abbreviation In_dec := (List.In_dec eq_nat_dec).
+Abbreviation vars := (@ATerm.vars Sig).
 
 Lemma sub_eq_is_sol : forall s1 t1 s2 t2,
   (forall x, In x (vars t1) -> In x (vars t2) -> False) ->

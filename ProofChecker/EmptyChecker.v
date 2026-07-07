@@ -30,4 +30,6 @@ Section EmptySolver.
 
 End EmptySolver.
 
+Create HintDb rainbow.
+
 #[global] Hint Resolve empty_solver : rainbow.

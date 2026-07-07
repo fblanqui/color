@@ -22,8 +22,8 @@ End VMpo_Struct.
 
 Module Make (Import S : VMpo_Struct).
 
-  Notation term := (term Sig).
-  Notation terms := (list term).
+  Abbreviation term := (term Sig).
+  Abbreviation terms := (list term).
 
 (***********************************************************************)
 (** eqset module of terms *)
@@ -62,6 +62,7 @@ Module Make (Import S : VMpo_Struct).
 (***********************************************************************)
 (** mpo *)
 
+  #[warnings="-register-all"]
   Inductive lt_mpo : relation term :=
   | mpo1 : forall f g ss ts, ltF g f -> 
     (forall t, In t ts -> lt_mpo t (Fun f ss)) -> lt_mpo (Fun g ts) (Fun f ss)
@@ -91,6 +92,7 @@ Module Make (Import S : VMpo_Struct).
 (***********************************************************************)
 (** inductive predicate saying when a variable occurs in a term *)
 
+  #[warnings="-register-all"]
   Inductive in_term_vars : variable -> term -> Prop :=
   | is_var : forall x, in_term_vars x (Var x)
   | is_in_list : forall x f ss,

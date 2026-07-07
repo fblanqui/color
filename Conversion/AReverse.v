@@ -18,14 +18,14 @@ Section S.
 
   Variable is_unary_sig : is_unary Sig.
 
-  Notation term := (term Sig).
-  Notation rule := (rule Sig). Notation rules := (list rule).
+  Abbreviation term := (term Sig).
+  Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
 
-  Notation SSig := (SSig_of_ASig Sig).
+  Abbreviation SSig := (SSig_of_ASig Sig).
 
   Definition rev_Sig := ASig_of_SSig SSig.
 
-  Notation Sig' := rev_Sig.
+  Abbreviation Sig' := rev_Sig.
 
 (***********************************************************************)
 (** signature isomorphism between Sig and Sig' *)
@@ -101,8 +101,8 @@ Section S.
 
   Definition reverse_trs := List.map reverse_rule.
 
-  Notation reverse_srule := (@SReverse.reverse SSig).
-  Notation reverse_srs := (List.map reverse_srule).
+  Abbreviation reverse_srule := (@SReverse.reverse SSig).
+  Abbreviation reverse_srs := (List.map reverse_srule).
 
 (***********************************************************************)
 (** preservation of variables *)

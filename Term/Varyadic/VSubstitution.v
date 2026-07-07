@@ -16,7 +16,7 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation terms := (list term).
+  Abbreviation term := (term Sig). Abbreviation terms := (list term).
 
   Definition substitution := variable -> term.
 

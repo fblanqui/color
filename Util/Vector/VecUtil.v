@@ -14,17 +14,18 @@ See the COPYRIGHTS and LICENSE files.
 
 Set Implicit Arguments.
 
+Set Warnings "-warn-library-file-stdlib-vector".
 From Stdlib Require Import Vector Program.
 From Stdlib Require Import Structures.Equalities.
 From Stdlib Require Import Morphisms.
 From CoLoR Require Import LogicUtil NatUtil EqUtil ListUtil BoolUtil RelUtil.
 
-Notation vector := Vector.t.
-Notation Vnil := Vector.nil.
-Notation Vcons := Vector.cons.
-Notation Vhead := Vector.hd.
-Notation Vtail := Vector.tl.
-Notation Vconst := Vector.const.
+Abbreviation vector := Vector.t.
+Abbreviation Vnil := Vector.nil.
+Abbreviation Vcons := Vector.cons.
+Abbreviation Vhead := Vector.hd.
+Abbreviation Vtail := Vector.tl.
+Abbreviation Vconst := Vector.const.
 
 Arguments Vnil {A}.
 Arguments Vcons [A] _ [n] _.
@@ -64,7 +65,7 @@ Ltac Veqtac := repeat
 
 Section Velementary.
 
-  Variable A : Type. Notation vec := (vector A).
+  Variable A : Type. Abbreviation vec := (vector A).
 
   Definition Vid n : vector A n -> vector A n :=
     match n with
@@ -97,10 +98,10 @@ Section Velementary.
   Lemma Vcons_eq : forall a1 a2 n (v1 v2 : vector A n),
     Vcons a1 v1 = Vcons a2 v2 <-> a1 = a2 /\ v1 = v2.
 
-  Proof with auto.
+  Proof.
     split; intros. 
-    apply Vcons_eq_elim... 
-    destruct H. apply Vcons_eq_intro...
+    apply Vcons_eq_elim. auto. 
+    destruct H. apply Vcons_eq_intro; auto.
   Qed.
 
   Lemma Vtail_eq : forall a n (v1 v2 : vector A n),
@@ -327,7 +328,7 @@ Section Vnth.
 
 End Vnth.
 
-Notation "v '[@' p ']'" := (Vnth v p) (at level 0) : vec_scope.
+Notation "v '[@' p ']'" := (Vnth v p) (at level 1) : vec_scope.
 
 (***********************************************************************)
 (** ** Add an element at the end of a vector. *)

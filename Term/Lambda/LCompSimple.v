@@ -24,7 +24,7 @@ Module Export Def.
 
     Variables F X So : Type.
 
-    Notation Te := (@Te F X).
+    Abbreviation Te := (@Te F X).
 
     Variable I : So -> set Te.
 
@@ -42,9 +42,9 @@ necessary (i.e. the length [n] of [Ts] can be bigger than the length
 [p] of [ts]). However, the result does not depend on these extras
 types. *)
 
-    Notation Tes := (vector Te).
-    Notation Ty := (@Ty So).
-    Notation Tys := (vector Ty).
+    Abbreviation Tes := (vector Te).
+    Abbreviation Ty := (@Ty So).
+    Abbreviation Tys := (vector Ty).
 
     Fixpoint vint {n} (Ts : Tys n) {p} (ts : Tes p) :=
       match Ts, ts with
@@ -71,8 +71,8 @@ Module Make (Export ST : ST_Struct)
   Module Export C := LComp.Make CP.
   Module Export T := LSimple.Make ST.
 
-  Notation int := (@int F X So).
-  Notation vint := (@vint F X So).
+  Abbreviation int := (@int F X So).
+  Abbreviation vint := (@vint F X So).
 
   Section int.
 
@@ -81,7 +81,7 @@ Module Make (Export ST : ST_Struct)
 (****************************************************************************)
 (** ** Properties of the interpretation of simple types *)
 
-    Notation int := (int I).
+    Abbreviation int := (int I).
 
     Lemma int_base b t : I b t <-> int (Base b) t.
 
@@ -162,7 +162,7 @@ Module Make (Export ST : ST_Struct)
 (****************************************************************************)
 (** ** Properties of [vint]. *)
 
-    Notation vint := (vint I).
+    Abbreviation vint := (vint I).
 
    (** Basic properties of [vint]. *)
 

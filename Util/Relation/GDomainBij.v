@@ -247,7 +247,7 @@ Section S.
       hyp.
     Qed.
 
-    Lemma dom_change_tc x y : rel_on_dom (rel_on_nat R !) x y <-> R! x y.
+    Lemma dom_change_tc x y : rel_on_dom ((rel_on_nat R) !) x y <-> R! x y.
 
     Proof.
       split; intros.
@@ -321,8 +321,8 @@ Section S.
     Proof.
       split; intros; unfold SCC in *.
       change (R! x y /\ transp (R!) x y).
-      change (rel_on_dom (intersection (rel_on_nat R !) 
-                                       (transp (rel_on_nat R !))) x y) in H.
+      change (rel_on_dom (intersection ((rel_on_nat R) !) 
+                                       (transp ((rel_on_nat R) !))) x y) in H.
       rewrite dom_change_inter in H.
       destruct H; rewrite dom_change_transp in H0.
       unfold transp in *.
@@ -330,7 +330,8 @@ Section S.
 
       change (R! x y /\ transp (R!) x y) in H.
       change (rel_on_dom
-                (intersection (rel_on_nat R !) (transp (rel_on_nat R !))) x y).
+                (intersection ((rel_on_nat R) !)
+                   (transp ((rel_on_nat R) !))) x y).
       rewrite dom_change_inter.
       destruct H; rewrite dom_change_transp.
       unfold transp in *.

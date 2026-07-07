@@ -133,6 +133,7 @@ Module Type RPO.
   Section S.
     Variable P : Precedence T.symbol.
 (** ** Definition of rpo.*)
+    #[warnings="-register-all"]
     Inductive equiv : term -> term -> Prop :=
     | Eq : forall t, equiv t t
     | Eq_lex : 

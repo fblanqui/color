@@ -17,11 +17,11 @@ Module BT <: BaseTypes.
 
   Lemma eq_BaseType_dec : forall A B : BaseType, {A = B} + {A <> B}.
 
-  Proof. (*COQ:decide equality*)destruct A. destruct B. auto. Defined.
+  Proof. decide equality. Defined.
 
   Lemma baseTypesNotEmpty : BaseType.
 
-  Proof Star.
+  Proof. exact Star. Qed.
 
 End BT.
 
@@ -42,7 +42,7 @@ Module Sig <: Signature.
 
   Lemma functionSymbolsNotEmpty : FunctionSymbol.
 
-  Proof nil.
+  Proof. exact nil. Qed.
 
   Definition f_type (f : FunctionSymbol) :=
     match f with

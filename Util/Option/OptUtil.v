@@ -11,7 +11,6 @@ Set Implicit Arguments.
 
 From Stdlib Require Import Bool Program.
 From CoLoR Require Import ListUtil LogicUtil.
-Import ListNotations.
 
 Lemma Some_eq : forall A (x y : A), Some x = Some y -> x = y.
 
@@ -57,9 +56,9 @@ Section OptUtil.
     end.
 
   Next Obligation.
-  Proof with auto.
-    apply forallb_imp_lforall with (fun x => opt_to_bool (f x))...
-    intros. destruct (f x). exists p... discr.
+  Proof.
+    apply forallb_imp_lforall with (fun x => opt_to_bool (f x)); auto.
+    intros. destruct (f x). exists p; auto. discr.
   Qed.
 
   Program Definition partition_opt (l : list A) :
@@ -71,17 +70,17 @@ Section OptUtil.
     } := partition pred_opt_to_bool l.
 
   Next Obligation.
-  Proof with auto.
+  Proof.
     assert (left := fun x => partition_left pred_opt_to_bool x l).
     assert (right := fun x => partition_right pred_opt_to_bool x l).
     assert (complete := fun x => partition_complete pred_opt_to_bool x l).
     destruct (partition pred_opt_to_bool l).
     unfold pred_opt_to_bool in *.
-    repeat split...
+    repeat split; auto.
     apply lforall_intro. intros x xl.
-    assert (ll := left x xl). destruct (f x); try discr...
+    assert (ll := left x xl). destruct (f x); try discr; auto.
     apply lforall_intro. intros x xl.
-    assert (rr := right x xl). destruct (f x); try discr...
+    assert (rr := right x xl). destruct (f x); try discr; auto.
   Qed.
 
 End OptUtil.
@@ -93,7 +92,7 @@ Section Map_option.
 
   Program Fixpoint map_opt (l : list A) : option (list B) :=
     match l with
-      | [] => Some []
+      | nil => Some nil
       | cons x xs => 
         match f x with
           | None => None

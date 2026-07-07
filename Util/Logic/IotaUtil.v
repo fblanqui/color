@@ -13,8 +13,8 @@ From Stdlib Require Import ClassicalDescription.
 
 Arguments constructive_definite_description [A P] _.
 
-Notation cdd := constructive_definite_description.
-Notation dec := excluded_middle_informative.
+Abbreviation cdd := constructive_definite_description.
+Abbreviation dec := excluded_middle_informative.
 
 Lemma dec1 A (P : A->Prop) x : {P x}+{~P x}.
 

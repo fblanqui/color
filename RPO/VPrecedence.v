@@ -15,8 +15,8 @@ Module Type VPrecedenceType.
 
   Parameter Sig : Signature.
 
-  Notation term := (term Sig).
-  Notation terms := (list term).
+  Abbreviation term := (term Sig).
+  Abbreviation terms := (list term).
 
   Parameter leF : Sig -> Sig -> Prop.
 

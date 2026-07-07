@@ -21,8 +21,8 @@ Section BinSignatureTheory.
 
   Variable Sig : BinSignature.
 
-  Notation term := (term Sig). Notation terms := (vector term).
-  Notation rule := (rule Sig). Notation rules := (list rule).
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
+  Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
 
   Lemma cons_arity : 2 = arity (Cons Sig).
 
@@ -79,7 +79,7 @@ Section BinSignatureTheory.
   Qed.
 
   Lemma proj_cons_rtc_l : forall t n (v : terms n),
-    red proj_cons # (cons_term t v) t.
+    (red proj_cons) # (cons_term t v) t.
 
   Proof.
     intros. case v. simpl. apply rt_refl.
@@ -87,7 +87,7 @@ Section BinSignatureTheory.
   Qed.
 
   Lemma proj_cons_tc_r : forall n (v : terms n) t x,
-    Vin x v -> red proj_cons ! (cons_term t v) x.
+    Vin x v -> (red proj_cons) ! (cons_term t v) x.
 
   Proof.
     intro n. induction v; intros. simpl in H. tauto.
@@ -97,8 +97,8 @@ Section BinSignatureTheory.
   Qed.
 
   Lemma proj_cons_fun_aux1 : forall f n m (Emn : n + S m = arity f) v1 v2 x y,
-    red proj_cons # x y ->
-      red proj_cons # (Fun f (Vcast (Vapp v1 (Vcons x v2)) Emn))
+    (red proj_cons) # x y ->
+      (red proj_cons) # (Fun f (Vcast (Vapp v1 (Vcons x v2)) Emn))
                       (Fun f (Vcast (Vapp v1 (Vcons y v2)) Emn)).
 
   Proof.
@@ -111,8 +111,8 @@ Section BinSignatureTheory.
   Qed.
 
   Lemma proj_cons_fun_aux2 : forall f n m (Emn : n + m = arity f) v v1 v2,
-    (forall i (Hi : i < n), red proj_cons # (Vnth v1 Hi) (Vnth v2 Hi))
-    -> red proj_cons # (Fun f (Vcast (Vapp v1 v) Emn))
+    (forall i (Hi : i < n), (red proj_cons) # (Vnth v1 Hi) (Vnth v2 Hi))
+    -> (red proj_cons) # (Fun f (Vcast (Vapp v1 v) Emn))
                        (Fun f (Vcast (Vapp v2 v) Emn)).
 
   Proof.
@@ -140,8 +140,8 @@ Section BinSignatureTheory.
   Qed.
 
   Lemma proj_cons_fun : forall f v1 v2,
-    (forall i (Hi : i < arity f), red proj_cons # (Vnth v1 Hi) (Vnth v2 Hi))
-    -> red proj_cons # (Fun f v1) (Fun f v2).
+    (forall i (Hi : i < arity f), (red proj_cons) # (Vnth v1 Hi) (Vnth v2 Hi))
+    -> (red proj_cons) # (Fun f v1) (Fun f v2).
 
   Proof.
     intros. gen (proj_cons_fun_aux2 f (Nat.add_0_r (arity f)) Vnil v1 v2 H).

@@ -63,7 +63,7 @@ Section S.
   Lemma path_nodup_length : 
     eq_midex A -> forall y l x,  path x y l -> 
       exists l', ~In x l' /\ ~In y l' /\ nodup l'
-        /\ length l'<= length l /\ l' [= l /\ path x y l'.
+        /\ length l'<= length l /\ l' ⊆ l /\ path x y l'.
 
   Proof.
     induction l; intros; simpl in H0. exists (nil : list A). simpl.
@@ -85,16 +85,16 @@ Section S.
     tauto.
     destruct (H x a). exists x0. rewrite H4. simpl.
     assert (length x0 <= S (length l)). lia. 
-    assert (x0 [= a :: l). apply incl_tl. tauto.
+    assert (x0 ⊆ a :: l). apply incl_tl. tauto.
     tauto. exists (a::x0). simpl.
     assert (S (length x0) <= S (length l)). lia. 
-    assert (a :: x0 [= a :: l). apply cons_incl. refl. tauto.
+    assert (a :: x0 ⊆ a :: l). apply cons_incl. refl. tauto.
     assert (a<>x). intro. rewrite H7 in H4. tauto.
     assert (a<>y). intro. rewrite H8 in H2. tauto. tauto.
   Qed.
 
   Lemma path_restricted_incl : forall y l l' x,
-    is_restricted R l -> path x y l' -> l' [= l.
+    is_restricted R l -> path x y l' -> l' ⊆ l.
 
   Proof.
     unfold is_restricted. induction l'; simpl; intros. intro. simpl. tauto.
@@ -301,7 +301,7 @@ Section restriction.
   Variables (A : Type) (R : relation A) (l : list A).
 
   Lemma restricted_path_incl : is_restricted R l ->
-    forall m x y, path R x y m -> x :: m ++ y :: nil [= l.
+    forall m x y, path R x y m -> x :: m ++ y :: nil ⊆ l.
 
   Proof.
     induction m; simpl; intros.

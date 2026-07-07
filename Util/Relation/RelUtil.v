@@ -36,17 +36,17 @@ Declare Scope relation_scope.
 (***********************************************************************)
 (** Notations for some relations and operations on relations. *)
 
-Notation rel := relation.
+Abbreviation rel := relation.
 
-Notation incl := inclusion.
+Abbreviation incl := inclusion.
 Infix "<<" := incl (at level 50) : relation_scope.
 
-Notation same := same_relation.
+Abbreviation same := same_relation.
 Infix "==" := same (at level 70).
 
 Infix "U" := union (at level 45) : relation_scope.
-Notation "x #" := (clos_refl_trans x) (at level 35) : relation_scope.
-Notation "x !" := (clos_trans x) (at level 35) : relation_scope.
+Notation "x #" := (clos_refl_trans x) (at level 1) : relation_scope.
+Notation "x !" := (clos_trans x) (at level 1) : relation_scope.
 
 Open Scope relation_scope.
 
@@ -498,7 +498,7 @@ Proof. fo. Qed.
 
 Definition clos_refl A (R : rel A) : rel A := eq U R.
 
-Notation "x %" := (clos_refl x) (at level 35) : relation_scope.
+Notation "x %" := (clos_refl x) (at level 1) : relation_scope.
 
 Global Instance rc_incl A : Proper (incl ==> incl) (@clos_refl A).
 
@@ -1219,7 +1219,7 @@ Inductive clos_trans1 A (R : rel A) : rel A :=
 | t1_step : forall x y, R x y -> clos_trans1 R x y
 | t1_trans : forall x y z, R x y -> clos_trans1 R y z -> clos_trans1 R x z.
 
-Notation "x !1" := (clos_trans1 x) (at level 35) : relation_scope.
+Notation "x !1" := (clos_trans1 x) (at level 1) : relation_scope.
 
 Global Instance tc1_trans A (R : rel A) : Transitive (R!1).
 
@@ -1246,7 +1246,7 @@ Inductive clos_refl_trans1 A (R : rel A) : rel A :=
 | rt1_trans : forall x y z,
   R x y -> clos_refl_trans1 R y z -> clos_refl_trans1 R x z.
 
-Notation "x #1" := (clos_refl_trans1 x) (at level 9) : relation_scope.
+Notation "x #1" := (clos_refl_trans1 x) (at level 1) : relation_scope.
 
 Global Instance rtc1_preorder A (R : rel A) : PreOrder (R#1).
 

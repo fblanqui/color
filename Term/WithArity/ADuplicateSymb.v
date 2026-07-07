@@ -15,7 +15,7 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation rules := (rules Sig).
+Abbreviation rules := (rules Sig).
 
 (***********************************************************************)
 (** signature of symbols marked as head or internal *)
@@ -46,7 +46,7 @@ Qed.
 
 Definition dup_sig := mkSignature dup_ar beq_dup_symb_ok.
 
-Notation Sig' := dup_sig. Notation Fun' := (@Fun Sig').
+Abbreviation Sig' := dup_sig. Abbreviation Fun' := (@Fun Sig').
 
 (***********************************************************************)
 (** function marking all symbols as internal *)
@@ -238,7 +238,7 @@ Variable no_rhs_var : forallb (@is_notvar_rhs Sig) R = true.
 
 Lemma WF_duplicate_hd_int_red :
   WF (hd_red_mod (dup_int_rules E) (dup_hd_rules R))
-  -> WF (hd_red_Mod (int_red E #) R).
+  -> WF (hd_red_Mod ((int_red E) #) R).
 
 Proof.
 intros. set (rel := hd_red_mod (dup_int_rules E) (dup_hd_rules R)).
@@ -255,7 +255,7 @@ End WF.
 (***********************************************************************)
 (** basic functions on marked rules *)
 
-Notation term' := (term Sig'). Notation rule' := (ATrs.rule Sig').
+Abbreviation term' := (term Sig'). Abbreviation rule' := (ATrs.rule Sig').
 
 Definition is_int_symb (t : term') :=
   match t with
@@ -319,14 +319,14 @@ revert H. compute. case_eq l. discr. intro f0. case_eq f0. discr.
 intros. subst l. simpl in xl. discr. congruence. tauto.
 Qed.
 
-Lemma dup_int_rules_int_red_rtc_aux : forall u t, red R # u t ->
+Lemma dup_int_rules_int_red_rtc_aux : forall u t, (red R) # u t ->
   forall f v, u = Fun' (hd_symb f) v -> 
-    int_red R # u t /\ exists w, t = Fun' (hd_symb f) w.
+    (int_red R) # u t /\ exists w, t = Fun' (hd_symb f) w.
 
 Proof.
 intros u t H.
 induction H; intros.
-assert (int_red R # x y).
+assert ((int_red R) # x y).
 apply rt_step.
 rewrite H0.
 apply dup_int_rules_int_red. subst;auto.
@@ -353,7 +353,7 @@ exists x0. auto.
 Qed.
 
 Lemma dup_int_rules_int_red_rtc : forall f v t,
-  red R # (Fun' (hd_symb f) v) t -> int_red R # (Fun' (hd_symb f) v) t.
+  (red R) # (Fun' (hd_symb f) v) t -> (int_red R) # (Fun' (hd_symb f) v) t.
 
 Proof.
 intros. ded (dup_int_rules_int_red_rtc_aux H (eq_refl _)). tauto.
@@ -368,7 +368,7 @@ Section red_dup.
 
 Variable R : rules.
 
-Notation R' := (dup_int_rules R).
+Abbreviation R' := (dup_int_rules R).
 
 Variable hyp : forallb (@is_notvar_lhs Sig') R' = true.
 
@@ -387,7 +387,7 @@ exists (Vcast (Vapp t (Vcons (fill c (sub s (dup_int_term rhs))) t0)) e).
 refl.
 Qed.
 
-Lemma rtc_red_dup_int_hd_symb_aux : forall f u v, red R' # u v ->
+Lemma rtc_red_dup_int_hd_symb_aux : forall f u v, (red R') # u v ->
   forall us, u = Fun' (hd_symb f) us -> exists vs, v = Fun' (hd_symb f) vs.
 
 Proof.
@@ -396,7 +396,7 @@ destruct (IHclos_refl_trans1 _ H1). eapply IHclos_refl_trans2. apply H2.
 Qed.
 
 Lemma rtc_red_dup_int_hd_symb : forall f us v,
-  red R' # (Fun' (hd_symb f) us) v -> exists vs, v = Fun' (hd_symb f) vs.
+  (red R') # (Fun' (hd_symb f) us) v -> exists vs, v = Fun' (hd_symb f) vs.
 
 Proof. intros. eapply rtc_red_dup_int_hd_symb_aux. apply H. refl. Qed.
 

@@ -16,8 +16,8 @@ Section S.
 
 Variable Sig : Signature.
 
-Notation term := (term Sig).
-Notation rule := (rule Sig). Notation rules := (list rule).
+Abbreviation term := (term Sig).
+Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
 
 (***********************************************************************)
 (** compatibility *)

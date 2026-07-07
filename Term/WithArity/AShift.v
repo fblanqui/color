@@ -16,11 +16,11 @@ Section S.
 
   Variable Sig : Signature.
 
-  Notation term := (term Sig). Notation terms := (vector term).
-  Notation vars := (@vars Sig).
+  Abbreviation term := (term Sig). Abbreviation terms := (vector term).
+  Abbreviation vars := (@vars Sig).
 
-  Notation rule := (rule Sig). Notation rules := (list rule).
-  Notation lhs := (@lhs Sig).
+  Abbreviation rule := (rule Sig). Abbreviation rules := (list rule).
+  Abbreviation lhs := (@lhs Sig).
 
 (***********************************************************************)
 (** shift variable indices in terms *)
@@ -108,7 +108,7 @@ Section S.
         rewrite H0. case (le_lt_dec p (x+p)); intro. refl. lia.
       Qed.
 
-      Lemma sub_shift_incl s r : vars r [= vars l ->
+      Lemma sub_shift_incl s r : vars r ⊆ vars l ->
         sub s r = sub (sub_comp s shift_inv_sub) (shift r).
 
       Proof.
