@@ -44,7 +44,7 @@ Infix "<<" := incl (at level 50) : relation_scope.
 Abbreviation same := same_relation.
 Infix "==" := same (at level 70).
 
-Infix "U" := union (at level 45) : relation_scope.
+Infix "U" := union (at level 45, left associativity) : relation_scope.
 Notation "x #" := (clos_refl_trans x) (at level 1) : relation_scope.
 Notation "x !" := (clos_trans x) (at level 1) : relation_scope.
 
